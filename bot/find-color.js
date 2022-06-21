@@ -2,6 +2,7 @@
  * find-color
  * Copyright(c) 2016 Mihai Potra <mike@mpotra.com>
  * MIT Licensed
+ * https://github.com/mpotra/find-color
  */
 
 /**

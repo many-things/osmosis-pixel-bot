@@ -3,15 +3,11 @@ import fs from 'fs';
 import axios from 'axios';
 import { createCanvas, Image } from '@napi-rs/canvas';
 import { fromHex } from './find-color';
+import { GAME_CONFIG, COLOR_SET } from './config';
 
-function componentToHex(c: number) {
-  const hex = c.toString(16);
-  return hex.length == 1 ? '0' + hex : hex;
-}
-
-function rgbToHex(r: number, g: number, b: number) {
-  return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
+const componentToHex = (c: number) => c.toString(16).padStart(2, '0');
+const rgbToHex = (r: number, g: number, b: number) =>
+  `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`;
 
 type ResponsePixels = {
   [x: number]:
@@ -20,33 +16,6 @@ type ResponsePixels = {
       }
     | undefined;
 };
-
-const GAME_CONFIG = {
-  PIXEL_SIZE: 30,
-  PIXEL_WIDTH: 250,
-  PIXEL_HEIGHT: 250,
-  SIDE_BAR_WIDTH: 206,
-  CANVAS_SIZE: 30 * 250,
-};
-
-const COLOR_SET = [
-  '#FFF',
-  '#D4D7D9',
-  '#898D90',
-  '#000',
-  '#FF4500',
-  '#FFA800',
-  '#FFD635',
-  '#00A368',
-  '#7EED56',
-  '#2450A4',
-  '#3690EA',
-  '#51E9F4',
-  '#811E9F',
-  '#B44AC0',
-  '#FF99AA',
-  '#9C6926',
-];
 
 const updatedPixels = async () => {
   const { data: pixels } = await axios.get<ResponsePixels>(
@@ -81,10 +50,14 @@ const updatedPixels = async () => {
     }
   }
 
-  fs.writeFileSync('./pixels.json', JSON.stringify(pixels, null, 2), 'utf8');
+  fs.writeFileSync(
+    './assets/pixels.json',
+    JSON.stringify(pixels, null, 2),
+    'utf8',
+  );
 
   const data = await canvas.encode('png');
-  fs.writeFileSync('./pixels.png', data);
+  fs.writeFileSync('./assets/pixels.png', data);
 
   return pixels;
 };
@@ -92,7 +65,7 @@ const updatedPixels = async () => {
 const main = async () => {
   // const pixels = await updatedPixels();
   const pixels: ResponsePixels = JSON.parse(
-    fs.readFileSync('./pixels.json', 'utf8'),
+    fs.readFileSync('./assets/pixels.json', 'utf8'),
   );
 
   const canvas = createCanvas(
@@ -123,7 +96,7 @@ const main = async () => {
     }
   }
 
-  const manythingsSVG = await fs.promises.readFile('./manythings.svg');
+  const manythingsSVG = await fs.promises.readFile('./assets/manythings.svg');
   const image = new Image();
   const resvg = new Resvg(manythingsSVG, {});
   const pngData = resvg.render();
@@ -139,7 +112,7 @@ const main = async () => {
 
   // logoCanvas to logo.png
   const logoData = await logoCanvas.encode('png');
-  fs.writeFileSync('./logo.png', logoData);
+  fs.writeFileSync('./assets/logo.png', logoData);
 
   // for each pixel in logoPixels
   const offsetX = 52;
@@ -207,7 +180,7 @@ const main = async () => {
   console.log(paintCount);
   console.log(palette);
   const newCanvasImage = await canvas.encode('png');
-  fs.writeFileSync('./new-pixels.png', newCanvasImage);
+  fs.writeFileSync('./assets/new-pixels.png', newCanvasImage);
 };
 
 main().catch(console.error);
