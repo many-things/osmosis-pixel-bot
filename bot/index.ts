@@ -19,55 +19,22 @@ type ResponsePixels = {
 };
 
 const updatedPixels = async () => {
+  console.log('[Loading] Fetching latest game state...');
   const { data: pixels } = await axios.get<ResponsePixels>(
     'https://pixels-osmosis.keplr.app/pixels',
   );
-
-  const canvas = createCanvas(
-    GAME_CONFIG.PIXEL_WIDTH * GAME_CONFIG.PIXEL_SIZE,
-    GAME_CONFIG.PIXEL_HEIGHT * GAME_CONFIG.PIXEL_SIZE,
-  );
-  const ctx = canvas.getContext('2d');
-
-  for (const xStr of Object.keys(pixels)) {
-    const x = parseInt(xStr);
-    if (!Number.isNaN(x)) {
-      const yPixels = pixels[x] ?? {};
-      for (const yStr of Object.keys(yPixels)) {
-        const y = parseInt(yStr);
-        if (!Number.isNaN(y)) {
-          const color = yPixels[y];
-          if (color != null && color >= 0 && color < COLOR_SET.length) {
-            ctx.fillStyle = COLOR_SET[color];
-            ctx.fillRect(
-              x * GAME_CONFIG.PIXEL_SIZE,
-              y * GAME_CONFIG.PIXEL_SIZE,
-              GAME_CONFIG.PIXEL_SIZE,
-              GAME_CONFIG.PIXEL_SIZE,
-            );
-          }
-        }
-      }
-    }
-  }
-
-  fs.writeFileSync(
-    './assets/pixels.json',
-    JSON.stringify(pixels, null, 2),
-    'utf8',
-  );
-
-  const data = await canvas.encode('png');
-  fs.writeFileSync('./assets/pixels.png', data);
-
+  console.log('[Success] Fetched latest game state!');
   return pixels;
 };
 
-const main = async () => {
-  // const pixels = await updatedPixels();
-  const pixels: ResponsePixels = JSON.parse(
-    fs.readFileSync('./assets/pixels.json', 'utf8'),
-  );
+const run = async (
+  granterAddrs: string[],
+  mutate: (walletAddress: string, blockNumber: number) => void,
+) => {
+  const pixels = await updatedPixels();
+  // const pixels: ResponsePixels = JSON.parse(
+  //   fs.readFileSync('./assets/pixels.json', 'utf8'),
+  // );
 
   const canvas = createCanvas(
     GAME_CONFIG.PIXEL_WIDTH * GAME_CONFIG.PIXEL_SIZE,
@@ -120,7 +87,7 @@ const main = async () => {
   const offsetY = 98;
 
   let paintCount = 0;
-  let palette = new Set();
+  let drawableAddrs = [...granterAddrs];
 
   for (let x = 0; x < pngData.width; x++) {
     for (let y = 0; y < pngData.height; y++) {
@@ -131,57 +98,122 @@ const main = async () => {
       const b = logoPixels.data[index + 2];
       const a = logoPixels.data[index + 3];
 
-      if (a > 0) {
-        const xStr = offsetX + x;
-        const yStr = offsetY + y;
+      if (a <= 0) {
+        return;
+      }
 
-        // modify pixels too
-        const pixelCoordX = xStr;
-        const pixelCoordY = yStr;
+      const pixelCoordX = offsetX + x;
+      const pixelCoordY = offsetY + y;
 
-        const xPixels = pixels[pixelCoordX];
-        if (!xPixels) {
-          continue;
+      const xPixels = pixels[pixelCoordX];
+      if (!xPixels) {
+        continue;
+      }
+      const currentColor = xPixels[pixelCoordY];
+
+      // get color index
+      const givenColor = rgbToHex(r, g, b).toUpperCase();
+      const nearestColorInSet = fromHex(COLOR_SET).find(givenColor);
+      let nearestColor =
+        nearestColorInSet === 0
+          ? '#000'
+          : `#${nearestColorInSet.toString(16).toUpperCase()}`;
+      if (r > 230 && g > 230 && b > 230) {
+        nearestColor = '#FFF';
+      }
+      const givenColorIndex = COLOR_SET.indexOf(nearestColor);
+
+      ctx.fillStyle = nearestColor;
+      ctx.fillRect(
+        pixelCoordX * GAME_CONFIG.PIXEL_SIZE,
+        pixelCoordY * GAME_CONFIG.PIXEL_SIZE,
+        GAME_CONFIG.PIXEL_SIZE,
+        GAME_CONFIG.PIXEL_SIZE,
+      );
+
+      if (givenColorIndex === -1) {
+        continue;
+      }
+
+      if (currentColor !== givenColorIndex) {
+        // NOTE: Update color
+        xPixels[pixelCoordX] = givenColorIndex;
+        paintCount += 1;
+
+        const walletAddress = drawableAddrs.pop();
+        if (!walletAddress) {
+          // all out of drawable addrs
+          return;
         }
-        const currentColor = xPixels[pixelCoordY];
+        const memo = `osmopixel (${pixelCoordX},${pixelCoordY},${givenColorIndex})`;
+        console.log({ walletAddress, memo });
 
-        const givenColor = rgbToHex(r, g, b).toUpperCase();
-        const nearestColorInSet = fromHex(COLOR_SET).find(givenColor);
-        let nearestColor =
-          nearestColorInSet === 0
-            ? '#000'
-            : `#${nearestColorInSet.toString(16).toUpperCase()}`;
-        if (r > 230 && g > 230 && b > 230) {
-          nearestColor = '#FFF';
-        }
-        palette.add(nearestColor);
-        const givenColorIndex = COLOR_SET.indexOf(nearestColor);
-
-        ctx.fillStyle = nearestColor;
-        ctx.fillRect(
-          xStr * GAME_CONFIG.PIXEL_SIZE,
-          yStr * GAME_CONFIG.PIXEL_SIZE,
-          GAME_CONFIG.PIXEL_SIZE,
-          GAME_CONFIG.PIXEL_SIZE,
-        );
-
-        if (givenColorIndex === -1) {
-          continue;
-        }
-
-        if (currentColor !== givenColorIndex) {
-          // NOTE: Update color
-          xPixels[pixelCoordX] = givenColorIndex;
-          paintCount += 1;
-        }
+        // FIXME: change to transaction included block
+        const latestBlock = await getLatestBlockNumber();
+        mutate(walletAddress, latestBlock ?? 0);
       }
     }
   }
 
   console.log(paintCount);
-  console.log(palette);
   const newCanvasImage = await canvas.encode('png');
   fs.writeFileSync('./assets/new-pixels.png', newCanvasImage);
+};
+
+type TendermintRPCStatusResponse = {
+  result: {
+    sync_info: {
+      latest_block_height: string;
+    };
+  };
+};
+const getLatestBlockNumber = async () => {
+  const TENDERMINT_RPC_ENDPOINT =
+    'https://osmosis-1--rpc--full.datahub.figment.io/apikey/1d501057297ffd7db2a343c2d3daf459';
+  try {
+    const { data } = await axios.get<TendermintRPCStatusResponse>(
+      `${TENDERMINT_RPC_ENDPOINT}/status`,
+    );
+    return parseInt(data.result.sync_info.latest_block_height);
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+const delayForMilliseconds = async (ms: number) =>
+  new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+const granterAddrs = ['osmo1schsnh9pg5eexg349e5gqslcurqm9nn5wcf703'];
+const lastDrawnBlockNumbers: { [address: string]: number | undefined } = {};
+const main = async () => {
+  let count = 0;
+  while (1) {
+    const latestBlock = await getLatestBlockNumber();
+    console.log(
+      `${count.toLocaleString()}st Run, Latest block: ${latestBlock}`,
+    );
+    const drawableAddrs = granterAddrs.filter((granter) => {
+      const lastDrawnBlock = lastDrawnBlockNumbers[granter] ?? null;
+      if ((lastDrawnBlock ?? 0) + 30 < (latestBlock ?? 0)) {
+        return true;
+      }
+      return false;
+    });
+    console.log({ drawableAddrs });
+
+    if (drawableAddrs.length > 0) {
+      const mutate = (walletAddr: string, blockNumber: number) => {
+        lastDrawnBlockNumbers[walletAddr] = blockNumber;
+      };
+
+      await run(drawableAddrs, mutate);
+    }
+
+    console.log('Delay for 30s...');
+    // (6.5 * 1_000 * 30) / 4
+    await delayForMilliseconds(30_000);
+  }
 };
 
 main().catch(console.error);
