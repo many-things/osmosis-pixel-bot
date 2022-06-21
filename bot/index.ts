@@ -48,7 +48,7 @@ const COLOR_SET = [
   '#9C6926',
 ];
 
-const updatePixels = async () => {
+const updatedPixels = async () => {
   const { data: pixels } = await axios.get<ResponsePixels>(
     'https://pixels-osmosis.keplr.app/pixels',
   );
@@ -85,11 +85,12 @@ const updatePixels = async () => {
 
   const data = await canvas.encode('png');
   fs.writeFileSync('./pixels.png', data);
+
+  return pixels;
 };
 
 const main = async () => {
-  // await updatePixels();
-
+  // const pixels = await updatedPixels();
   const pixels: ResponsePixels = JSON.parse(
     fs.readFileSync('./pixels.json', 'utf8'),
   );
