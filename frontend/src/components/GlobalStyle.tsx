@@ -8,6 +8,10 @@ export const GlobalStyle = createGlobalStyle`
     box-sizing: border-box;
     word-break: keep-all;
   }
+  
+  html, body {
+    background-color: black;
+  }
 
   body {
     margin: 0;

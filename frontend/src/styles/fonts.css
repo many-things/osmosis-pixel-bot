@@ -1,0 +1,10 @@
+@font-face {
+  font-family: 'Platform';
+  font-weight: 400;
+  src: url('/fonts/Platform-Regular-Web.woff') format('woff');
+}
+@font-face {
+  font-family: 'Platform';
+  font-weight: 500;
+  src: url('/fonts/Platform-Medium-Web.woff') format('woff');
+}
