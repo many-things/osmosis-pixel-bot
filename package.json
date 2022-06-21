@@ -6,6 +6,9 @@
   "author": "Junho Yeo <i@junho.io>",
   "license": "MIT",
   "packageManager": "yarn@3.2.1",
+  "scripts": {
+    "lint": "prettier --write ."
+  },
   "workspaces": [
     "bot",
     "frontend"

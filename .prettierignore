@@ -1,6 +1,9 @@
-# docs
-build
+.yarn
+
+.next
 .vercel
 
-# web
-.next
+build
+
+.pnp.cjs
+.pnp.loader.mjs

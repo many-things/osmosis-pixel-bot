@@ -1,19 +1,18 @@
 import { encodeSecp256k1Pubkey } from '@cosmjs/amino';
-import { SigningStargateClient } from '@cosmjs/stargate';
 import {
   encodePubkey,
   makeAuthInfoBytes,
   makeSignDoc,
 } from '@cosmjs/proto-signing';
+import { GeneratedType, Registry } from '@cosmjs/proto-signing';
+import { SigningStargateClient } from '@cosmjs/stargate';
+import { Keplr } from '@keplr-wallet/types';
+import { MsgGrant } from 'cosmjs-types/cosmos/authz/v1beta1/tx';
 import { SendAuthorization } from 'cosmjs-types/cosmos/bank/v1beta1/authz';
-
 import { Timestamp } from 'cosmjs-types/google/protobuf/timestamp';
 import dayjs from 'dayjs';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
-import { Keplr } from '@keplr-wallet/types';
-import { GeneratedType, Registry } from '@cosmjs/proto-signing';
-import { MsgGrant } from 'cosmjs-types/cosmos/authz/v1beta1/tx';
 
 const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ['/cosmos.authz.v1beta1.MsgGrant', MsgGrant],
