@@ -130,11 +130,15 @@ const main = async () => {
 
   const logoCanvas = createCanvas(pngData.width, pngData.height);
   const logoCtx = logoCanvas.getContext('2d');
+  logoCtx.imageSmoothingEnabled = false;
   logoCtx.drawImage(image, 0, 0);
 
   // load pixels from logoCanvas
   const logoPixels = logoCtx.getImageData(0, 0, pngData.width, pngData.height);
-  console.log(logoPixels);
+
+  // logoCanvas to logo.png
+  const logoData = await logoCanvas.encode('png');
+  fs.writeFileSync('./logo.png', logoData);
 
   // for each pixel in logoPixels
   const offsetX = 52;
@@ -168,12 +172,15 @@ const main = async () => {
 
         const givenColor = rgbToHex(r, g, b).toUpperCase();
         const nearestColorInSet = fromHex(COLOR_SET).find(givenColor);
-        const nearestColor =
+        let nearestColor =
           nearestColorInSet === 0
             ? '#000'
             : `#${nearestColorInSet.toString(16).toUpperCase()}`;
-        const givenColorIndex = COLOR_SET.indexOf(nearestColor);
+        if (r > 230 && g > 230 && b > 230) {
+          nearestColor = '#FFF';
+        }
         palette.add(nearestColor);
+        const givenColorIndex = COLOR_SET.indexOf(nearestColor);
 
         ctx.fillStyle = nearestColor;
         ctx.fillRect(
@@ -197,7 +204,7 @@ const main = async () => {
   }
 
   console.log(paintCount);
-  // console.log(palette);
+  console.log(palette);
   const newCanvasImage = await canvas.encode('png');
   fs.writeFileSync('./new-pixels.png', newCanvasImage);
 };
