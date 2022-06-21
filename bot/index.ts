@@ -37,7 +37,7 @@ const COLOR_SET = [
   '#9C6926',
 ];
 
-const getPixels = async () => {
+const updatePixels = async () => {
   const { data: pixels } = await axios.get<ResponsePixels>(
     'https://pixels-osmosis.keplr.app/pixels',
   );
@@ -70,12 +70,58 @@ const getPixels = async () => {
     }
   }
 
+  fs.writeFileSync('./pixels.json', JSON.stringify(pixels, null, 2), 'utf8');
+
   const data = await canvas.encode('png');
   fs.writeFileSync('./pixels.png', data);
 };
 
 const main = async () => {
-  await getPixels();
+  // await updatePixels();
+
+  const pixels: ResponsePixels = JSON.parse(
+    fs.readFileSync('./pixels.json', 'utf8'),
+  );
+
+  const canvas = createCanvas(
+    GAME_CONFIG.PIXEL_WIDTH * GAME_CONFIG.PIXEL_SIZE,
+    GAME_CONFIG.PIXEL_HEIGHT * GAME_CONFIG.PIXEL_SIZE,
+  );
+  const ctx = canvas.getContext('2d');
+
+  for (const xStr of Object.keys(pixels)) {
+    const x = parseInt(xStr);
+    if (!Number.isNaN(x)) {
+      const yPixels = pixels[x] ?? {};
+      for (const yStr of Object.keys(yPixels)) {
+        const y = parseInt(yStr);
+        if (!Number.isNaN(y)) {
+          const color = yPixels[y];
+          if (color != null && color >= 0 && color < COLOR_SET.length) {
+            ctx.fillStyle = COLOR_SET[color];
+            ctx.fillRect(
+              x * GAME_CONFIG.PIXEL_SIZE,
+              y * GAME_CONFIG.PIXEL_SIZE,
+              GAME_CONFIG.PIXEL_SIZE,
+              GAME_CONFIG.PIXEL_SIZE,
+            );
+          }
+        }
+      }
+    }
+  }
+
+  // place dot on (52, 98)
+  ctx.fillStyle = '#ff00ff';
+  ctx.fillRect(
+    52 * GAME_CONFIG.PIXEL_SIZE,
+    98 * GAME_CONFIG.PIXEL_SIZE,
+    30,
+    30,
+  );
+
+  const image = await canvas.encode('png');
+  fs.writeFileSync('./new-pixels.png', image);
 };
 
 main().catch(console.error);
