@@ -1,9 +1,30 @@
+import { encodeSecp256k1Pubkey } from '@cosmjs/amino';
+import { SigningStargateClient } from '@cosmjs/stargate';
+import {
+  encodePubkey,
+  makeAuthInfoBytes,
+  makeSignDoc,
+} from '@cosmjs/proto-signing';
+import { SendAuthorization } from 'cosmjs-types/cosmos/bank/v1beta1/authz';
+
+import { Timestamp } from 'cosmjs-types/google/protobuf/timestamp';
+import dayjs from 'dayjs';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
+import { Keplr } from '@keplr-wallet/types';
+import { GeneratedType, Registry } from '@cosmjs/proto-signing';
+import { MsgGrant } from 'cosmjs-types/cosmos/authz/v1beta1/tx';
+
+const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [
+  ['/cosmos.authz.v1beta1.MsgGrant', MsgGrant],
+  ['/cosmos.authz.v1beta1.SendAuthorization', SendAuthorization],
+];
+
+export const registry = new Registry(defaultRegistryTypes);
 
 declare global {
   interface Window {
-    keplr: any;
+    keplr: Keplr;
   }
 }
 
@@ -14,24 +35,75 @@ const HomePage = () => {
       return;
     }
 
-    try {
-      const chainId = 'cosmoshub-4';
-      await window.keplr.enable(chainId);
+    const chainId = 'osmosis-1';
+    await window.keplr.enable(chainId);
 
-      const offlineSigner = window.keplr.getOfflineSignerOnlyAmino(chainId);
-      const accounts = await offlineSigner.getAccounts();
-      const walletAddress = accounts[0].address;
-      console.log(walletAddress);
+    const offlineSigner = window.keplr.getOfflineSigner(chainId);
 
-      // const { pub_key: publicKey, signature } =
-      //   await window.keplr.signArbitrary(
-      //     chainId,
-      //     walletAddress,
-      //     messageToBeSigned,
-      //   );
-    } catch (e) {
-      console.error(e);
-    }
+    const stargateClient = await SigningStargateClient.connectWithSigner(
+      'https://osmosis-1--rpc--full.datahub.figment.io/apikey/1d501057297ffd7db2a343c2d3daf459',
+      offlineSigner,
+    );
+
+    const accounts = await offlineSigner.getAccounts();
+    const firstAccount = accounts[0];
+
+    const pubkey = encodePubkey(encodeSecp256k1Pubkey(firstAccount.pubkey));
+    const { sequence, accountNumber } = await stargateClient.getSequence(
+      firstAccount.address,
+    );
+
+    const grantMsg = {
+      typeUrl: '/cosmos.authz.v1beta1.MsgGrant',
+      value: {
+        granter: firstAccount.address,
+        grantee: 'osmo15zysaya5j34vy2cqd7y9q8m3drjpy0d2lvmkpa',
+        grant: {
+          authorization: {
+            typeUrl: '/cosmos.authz.v1beta1.SendAuthorization',
+            value: SendAuthorization.encode(
+              SendAuthorization.fromPartial({
+                spendLimit: [
+                  {
+                    denom: 'uosmo',
+                    amount: '0',
+                  },
+                ],
+              }),
+            ).finish(),
+          },
+          expiration: Timestamp.fromPartial({
+            seconds: Math.floor(
+              dayjs(dayjs().add(1, 'month')).valueOf() / 1000,
+            ),
+            nanos: 0,
+          }),
+        },
+      },
+    };
+
+    const txBodyEncodeObject = {
+      typeUrl: '/cosmos.tx.v1beta1.TxBody',
+      value: {
+        messages: [grantMsg],
+        memo: 'Grant for MANYTHINGS',
+      },
+    };
+    const txBodyBytes = registry.encode(txBodyEncodeObject);
+
+    const signDoc = makeSignDoc(
+      txBodyBytes,
+      makeAuthInfoBytes(
+        [{ pubkey, sequence }],
+        [{ denom: 'uosmo', amount: '0' }],
+        0,
+      ),
+      chainId,
+      accountNumber,
+    );
+
+    const data = await offlineSigner.signDirect(firstAccount.address, signDoc);
+    console.log(data);
   }, []);
 
   return (
