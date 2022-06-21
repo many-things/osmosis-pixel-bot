@@ -2,6 +2,16 @@ import { Resvg } from '@resvg/resvg-js';
 import fs from 'fs';
 import axios from 'axios';
 import { createCanvas, Image } from '@napi-rs/canvas';
+import { fromHex } from './find-color';
+
+function componentToHex(c: number) {
+  const hex = c.toString(16);
+  return hex.length == 1 ? '0' + hex : hex;
+}
+
+function rgbToHex(r: number, g: number, b: number) {
+  return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
 
 type ResponsePixels = {
   [x: number]:
@@ -130,6 +140,9 @@ const main = async () => {
   const offsetX = 52;
   const offsetY = 98;
 
+  let paintCount = 0;
+  let palette = new Set();
+
   for (let x = 0; x < pngData.width; x++) {
     for (let y = 0; y < pngData.height; y++) {
       const index = (x + y * pngData.width) * 4;
@@ -140,17 +153,51 @@ const main = async () => {
       const a = logoPixels.data[index + 3];
 
       if (a > 0) {
-        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
+        const xStr = offsetX + x;
+        const yStr = offsetY + y;
+
+        // modify pixels too
+        const pixelCoordX = xStr;
+        const pixelCoordY = yStr;
+
+        const xPixels = pixels[pixelCoordX];
+        if (!xPixels) {
+          continue;
+        }
+        const currentColor = xPixels[pixelCoordY];
+
+        const givenColor = rgbToHex(r, g, b).toUpperCase();
+        const nearestColorInSet = fromHex(COLOR_SET).find(givenColor);
+        const nearestColor =
+          nearestColorInSet === 0
+            ? '#000'
+            : `#${nearestColorInSet.toString(16).toUpperCase()}`;
+        const givenColorIndex = COLOR_SET.indexOf(nearestColor);
+        palette.add(nearestColor);
+
+        ctx.fillStyle = nearestColor;
         ctx.fillRect(
-          (offsetX + x) * GAME_CONFIG.PIXEL_SIZE,
-          (offsetY + y) * GAME_CONFIG.PIXEL_SIZE,
+          xStr * GAME_CONFIG.PIXEL_SIZE,
+          yStr * GAME_CONFIG.PIXEL_SIZE,
           GAME_CONFIG.PIXEL_SIZE,
           GAME_CONFIG.PIXEL_SIZE,
         );
+
+        if (givenColorIndex === -1) {
+          continue;
+        }
+
+        if (currentColor !== givenColorIndex) {
+          // NOTE: Update color
+          xPixels[pixelCoordX] = givenColorIndex;
+          paintCount += 1;
+        }
       }
     }
   }
 
+  console.log(paintCount);
+  // console.log(palette);
   const newCanvasImage = await canvas.encode('png');
   fs.writeFileSync('./new-pixels.png', newCanvasImage);
 };
