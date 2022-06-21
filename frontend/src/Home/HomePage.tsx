@@ -36,7 +36,7 @@ const HomePage = () => {
 
   return (
     <Container>
-      <ManythingsLogo src="/assets/manythings.svg" />
+      <ManythingsLogo src="/assets/manythings.png" />
       <Button onClick={onClick}>Generate Sign</Button>
     </Container>
   );
@@ -55,6 +55,7 @@ const Container = styled.div`
 const ManythingsLogo = styled.img`
   max-width: 800px;
   width: 95%;
+  image-rendering: pixelated;
 `;
 const Button = styled.button`
   margin-top: 32px;
