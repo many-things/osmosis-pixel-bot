@@ -1,6 +1,7 @@
+import { Resvg } from '@resvg/resvg-js';
 import fs from 'fs';
 import axios from 'axios';
-import { createCanvas } from '@napi-rs/canvas';
+import { createCanvas, Image } from '@napi-rs/canvas';
 
 type ResponsePixels = {
   [x: number]:
@@ -111,17 +112,47 @@ const main = async () => {
     }
   }
 
-  // place dot on (52, 98)
-  ctx.fillStyle = '#ff00ff';
-  ctx.fillRect(
-    52 * GAME_CONFIG.PIXEL_SIZE,
-    98 * GAME_CONFIG.PIXEL_SIZE,
-    30,
-    30,
-  );
+  const manythingsSVG = await fs.promises.readFile('./manythings.svg');
+  const image = new Image();
+  const resvg = new Resvg(manythingsSVG, {});
+  const pngData = resvg.render();
+  image.src = pngData.asPng();
 
-  const image = await canvas.encode('png');
-  fs.writeFileSync('./new-pixels.png', image);
+  const logoCanvas = createCanvas(pngData.width, pngData.height);
+  const logoCtx = logoCanvas.getContext('2d');
+  logoCtx.drawImage(image, 0, 0);
+
+  // load pixels from logoCanvas
+  const logoPixels = logoCtx.getImageData(0, 0, pngData.width, pngData.height);
+  console.log(logoPixels);
+
+  // for each pixel in logoPixels
+  const offsetX = 52;
+  const offsetY = 98;
+
+  for (let x = 0; x < pngData.width; x++) {
+    for (let y = 0; y < pngData.height; y++) {
+      const index = (x + y * pngData.width) * 4;
+
+      const r = logoPixels.data[index];
+      const g = logoPixels.data[index + 1];
+      const b = logoPixels.data[index + 2];
+      const a = logoPixels.data[index + 3];
+
+      if (a > 0) {
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
+        ctx.fillRect(
+          (offsetX + x) * GAME_CONFIG.PIXEL_SIZE,
+          (offsetY + y) * GAME_CONFIG.PIXEL_SIZE,
+          GAME_CONFIG.PIXEL_SIZE,
+          GAME_CONFIG.PIXEL_SIZE,
+        );
+      }
+    }
+  }
+
+  const newCanvasImage = await canvas.encode('png');
+  fs.writeFileSync('./new-pixels.png', newCanvasImage);
 };
 
 main().catch(console.error);

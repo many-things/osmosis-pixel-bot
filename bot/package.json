@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@napi-rs/canvas": "^0.1.22",
+    "@resvg/resvg-js": "^2.0.1",
     "axios": "^0.27.2"
   }
 }

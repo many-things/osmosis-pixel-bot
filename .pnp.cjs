@@ -2859,6 +2859,135 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@resvg/resvg-js", [\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/cache/@resvg-resvg-js-npm-2.0.1-6e5c2473df-d5e69e7c53.zip/node_modules/@resvg/resvg-js/",\
+          "packageDependencies": [\
+            ["@resvg/resvg-js", "npm:2.0.1"],\
+            ["@resvg/resvg-js-android-arm-eabi", "npm:2.0.1"],\
+            ["@resvg/resvg-js-android-arm64", "npm:2.0.1"],\
+            ["@resvg/resvg-js-darwin-arm64", "npm:2.0.1"],\
+            ["@resvg/resvg-js-darwin-x64", "npm:2.0.1"],\
+            ["@resvg/resvg-js-linux-arm-gnueabihf", "npm:2.0.1"],\
+            ["@resvg/resvg-js-linux-arm64-gnu", "npm:2.0.1"],\
+            ["@resvg/resvg-js-linux-arm64-musl", "npm:2.0.1"],\
+            ["@resvg/resvg-js-linux-x64-gnu", "npm:2.0.1"],\
+            ["@resvg/resvg-js-linux-x64-musl", "npm:2.0.1"],\
+            ["@resvg/resvg-js-win32-arm64-msvc", "npm:2.0.1"],\
+            ["@resvg/resvg-js-win32-ia32-msvc", "npm:2.0.1"],\
+            ["@resvg/resvg-js-win32-x64-msvc", "npm:2.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@resvg/resvg-js-android-arm-eabi", [\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/unplugged/@resvg-resvg-js-android-arm-eabi-npm-2.0.1-ef57760030/node_modules/@resvg/resvg-js-android-arm-eabi/",\
+          "packageDependencies": [\
+            ["@resvg/resvg-js-android-arm-eabi", "npm:2.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@resvg/resvg-js-android-arm64", [\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/unplugged/@resvg-resvg-js-android-arm64-npm-2.0.1-6dd8619933/node_modules/@resvg/resvg-js-android-arm64/",\
+          "packageDependencies": [\
+            ["@resvg/resvg-js-android-arm64", "npm:2.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@resvg/resvg-js-darwin-arm64", [\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/unplugged/@resvg-resvg-js-darwin-arm64-npm-2.0.1-7d0154256a/node_modules/@resvg/resvg-js-darwin-arm64/",\
+          "packageDependencies": [\
+            ["@resvg/resvg-js-darwin-arm64", "npm:2.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@resvg/resvg-js-darwin-x64", [\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/unplugged/@resvg-resvg-js-darwin-x64-npm-2.0.1-cb956f26aa/node_modules/@resvg/resvg-js-darwin-x64/",\
+          "packageDependencies": [\
+            ["@resvg/resvg-js-darwin-x64", "npm:2.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@resvg/resvg-js-linux-arm-gnueabihf", [\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/unplugged/@resvg-resvg-js-linux-arm-gnueabihf-npm-2.0.1-8c46caa760/node_modules/@resvg/resvg-js-linux-arm-gnueabihf/",\
+          "packageDependencies": [\
+            ["@resvg/resvg-js-linux-arm-gnueabihf", "npm:2.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@resvg/resvg-js-linux-arm64-gnu", [\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/unplugged/@resvg-resvg-js-linux-arm64-gnu-npm-2.0.1-32c2f3c611/node_modules/@resvg/resvg-js-linux-arm64-gnu/",\
+          "packageDependencies": [\
+            ["@resvg/resvg-js-linux-arm64-gnu", "npm:2.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@resvg/resvg-js-linux-arm64-musl", [\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/unplugged/@resvg-resvg-js-linux-arm64-musl-npm-2.0.1-31802a3302/node_modules/@resvg/resvg-js-linux-arm64-musl/",\
+          "packageDependencies": [\
+            ["@resvg/resvg-js-linux-arm64-musl", "npm:2.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@resvg/resvg-js-linux-x64-gnu", [\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/unplugged/@resvg-resvg-js-linux-x64-gnu-npm-2.0.1-16de76186f/node_modules/@resvg/resvg-js-linux-x64-gnu/",\
+          "packageDependencies": [\
+            ["@resvg/resvg-js-linux-x64-gnu", "npm:2.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@resvg/resvg-js-linux-x64-musl", [\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/unplugged/@resvg-resvg-js-linux-x64-musl-npm-2.0.1-7038cb83ed/node_modules/@resvg/resvg-js-linux-x64-musl/",\
+          "packageDependencies": [\
+            ["@resvg/resvg-js-linux-x64-musl", "npm:2.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@resvg/resvg-js-win32-arm64-msvc", [\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/unplugged/@resvg-resvg-js-win32-arm64-msvc-npm-2.0.1-14196e11be/node_modules/@resvg/resvg-js-win32-arm64-msvc/",\
+          "packageDependencies": [\
+            ["@resvg/resvg-js-win32-arm64-msvc", "npm:2.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@resvg/resvg-js-win32-ia32-msvc", [\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/unplugged/@resvg-resvg-js-win32-ia32-msvc-npm-2.0.1-612158d8cf/node_modules/@resvg/resvg-js-win32-ia32-msvc/",\
+          "packageDependencies": [\
+            ["@resvg/resvg-js-win32-ia32-msvc", "npm:2.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@resvg/resvg-js-win32-x64-msvc", [\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/unplugged/@resvg-resvg-js-win32-x64-msvc-npm-2.0.1-8e0de28b26/node_modules/@resvg/resvg-js-win32-x64-msvc/",\
+          "packageDependencies": [\
+            ["@resvg/resvg-js-win32-x64-msvc", "npm:2.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@rushstack/eslint-patch", [\
         ["npm:1.1.3", {\
           "packageLocation": "./.yarn/cache/@rushstack-eslint-patch-npm-1.1.3-78a3592ebb-53752d1e34.zip/node_modules/@rushstack/eslint-patch/",\
@@ -3812,6 +3941,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["bot", "workspace:bot"],\
             ["@napi-rs/canvas", "npm:0.1.22"],\
+            ["@resvg/resvg-js", "npm:2.0.1"],\
             ["@types/node", "npm:18.0.0"],\
             ["axios", "npm:0.27.2"],\
             ["ts-node", "virtual:23ecb6986bf7e6e33be3d4b4c64280016c03776f095e696d8bfc9799fb1f90fd18ff28cc83f2a52fb49f997c7bb22717767d4ada30191322bda55dc18350683c#npm:10.8.1"],\
