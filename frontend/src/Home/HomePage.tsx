@@ -1,9 +1,5 @@
-import { encodeSecp256k1Pubkey } from '@cosmjs/amino';
-import { fromBase64 } from '@cosmjs/encoding';
-import { BroadcastMode } from '@cosmjs/launchpad';
+import { StdSignature, encodeSecp256k1Pubkey } from '@cosmjs/amino';
 import {
-  decodePubkey,
-  decodeTxRaw,
   encodePubkey,
   makeAuthInfoBytes,
   makeSignDoc,
@@ -11,27 +7,16 @@ import {
 import { GeneratedType, Registry } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import { Keplr } from '@keplr-wallet/types';
-import { MsgExec, MsgGrant } from 'cosmjs-types/cosmos/authz/v1beta1/tx';
+import { MsgGrant } from 'cosmjs-types/cosmos/authz/v1beta1/tx';
 import { SendAuthorization } from 'cosmjs-types/cosmos/bank/v1beta1/authz';
-import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx';
-import { PubKey } from 'cosmjs-types/cosmos/crypto/secp256k1/keys';
-import { SignMode } from 'cosmjs-types/cosmos/tx/signing/v1beta1/signing';
-import { AuthInfo, Fee, TxRaw } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
-import { Any } from 'cosmjs-types/google/protobuf/any';
 import { Timestamp } from 'cosmjs-types/google/protobuf/timestamp';
 import dayjs from 'dayjs';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
 const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ['/cosmos.authz.v1beta1.MsgGrant', MsgGrant],
   ['/cosmos.authz.v1beta1.SendAuthorization', SendAuthorization],
-  ['/cosmos.authz.v1beta1.MsgExec', MsgExec],
-  ['/cosmos.tx.v1beta1.AuthInfo', AuthInfo],
-  ['/cosmos.crypto.secp256k1.PubKey', PubKey],
-  ['/google/protobuf/any', Any],
-  ['/cosmos.bank.v1beta1.tx', MsgSend],
-  ['/cosmos.tx.v1beta1.TxRaw', TxRaw],
 ];
 
 export const registry = new Registry(defaultRegistryTypes);
@@ -43,6 +28,8 @@ declare global {
 }
 
 const HomePage = () => {
+  const [signResponse, setSignResponse] = useState<string | null>(null);
+
   const onClick = useCallback(async () => {
     if (typeof window.keplr === 'undefined') {
       window.alert('Please install keplr extension');
@@ -67,216 +54,71 @@ const HomePage = () => {
       firstAccount.address,
     );
 
-    // const grantMsg = {
-    //   typeUrl: '/cosmos.authz.v1beta1.MsgGrant',
-    //   value: {
-    //     granter: firstAccount.address,
-    //     grantee: 'osmo15zysaya5j34vy2cqd7y9q8m3drjpy0d2lvmkpa',
-    //     grant: {
-    //       authorization: {
-    //         typeUrl: '/cosmos.authz.v1beta1.SendAuthorization',
-    //         value: SendAuthorization.encode(
-    //           SendAuthorization.fromPartial({
-    //             spendLimit: [
-    //               {
-    //                 denom: 'uosmo',
-    //                 amount: '0',
-    //               },
-    //             ],
-    //           }),
-    //         ).finish(),
-    //       },
-    //       expiration: Timestamp.fromPartial({
-    //         seconds: Math.floor(
-    //           dayjs(dayjs().add(1, 'month')).valueOf() / 1000,
-    //         ),
-    //         nanos: 0,
-    //       }),
-    //     },
-    //   },
-    // };
-
-    // const txBodyEncodeObject = {
-    //   typeUrl: '/cosmos.tx.v1beta1.TxBody',
-    //   value: {
-    //     messages: [grantMsg],
-    //     memo: 'Grant for MANYTHINGS',
-    //   },
-    // };
-    // const txBodyBytes = registry.encode(txBodyEncodeObject);
-
-    // const signDoc = makeSignDoc(
-    //   txBodyBytes,
-    //   makeAuthInfoBytes(
-    //     [{ pubkey, sequence }],
-    //     [{ denom: 'uosmo', amount: '0' }],
-    //     0,
-    //   ),
-    //   chainId,
-    //   accountNumber,
-    // );
-
-    // const signResponse = await offlineSigner.signDirect(
-    //   firstAccount.address,
-    //   signDoc,
-    // );
-    // console.log(signResponse);
-
-    const signResponse = {
-      signature: {
-        pub_key: {
-          type: 'tendermint/PubKeySecp256k1',
-          value: 'AyQ45JJrWYfXF6EvRpaP38RCX8S7AWZCsyIg+/HYRzRA',
-        },
-        signature:
-          '/KEPwFYf222BXlfHFvuR9eAklXlhDnLgNR50tFD2QpRoL6nGQURpc8BL8d6WcjT3Fz0nhP2YkRZKlQUXQ9/7TA==',
-      },
-    };
-
-    // try {
-    // const msgExecMsg = {
-    //   type: 'cosmos-sdk/MsgExec',
-    //   value: MsgExec.fromPartial({
-    //     fromAddress: 'osmo15zysaya5j34vy2cqd7y9q8m3drjpy0d2lvmkpa',
-    //     toAddress: 'osmo15zysaya5j34vy2cqd7y9q8m3drjpy0d2lvmkpa',
-    //     amount: [
-    //       {
-    //         denom: 'uosmo',
-    //         amount: '1',
-    //       },
-    //     ],
-    //   }).finish(),
-    // };
-    const msgExecMsg = {
-      typeUrl: '/cosmos.authz.v1beta1.MsgExec',
+    const grantMsg = {
+      typeUrl: '/cosmos.authz.v1beta1.MsgGrant',
       value: {
+        granter: firstAccount.address,
         grantee: 'osmo15zysaya5j34vy2cqd7y9q8m3drjpy0d2lvmkpa',
-        msgs: [
-          registry.encode({
-            typeUrl: '/cosmos.bank.v1beta1.tx',
-            value: {
-              fromAddress: firstAccount.address,
-              toAddress: firstAccount.address,
-              amount: [
-                {
-                  denom: 'uosmo',
-                  amount: '0',
-                },
-              ],
-            },
+        grant: {
+          authorization: {
+            typeUrl: '/cosmos.authz.v1beta1.SendAuthorization',
+            value: SendAuthorization.encode(
+              SendAuthorization.fromPartial({
+                spendLimit: [
+                  {
+                    denom: 'uosmo',
+                    amount: '0',
+                  },
+                ],
+              }),
+            ).finish(),
+          },
+          expiration: Timestamp.fromPartial({
+            seconds: Math.floor(
+              dayjs(dayjs().add(1, 'month')).valueOf() / 1000,
+            ),
+            nanos: 0,
           }),
-        ],
+        },
       },
     };
 
-    const pubkeyProto = PubKey.fromPartial({
-      key: fromBase64(signResponse.signature.pub_key.value),
-    });
-
-    const authInfoBytes = makeAuthInfoBytes(
-      [
-        {
-          pubkey,
-          sequence,
-        },
-      ],
-      [{ denom: 'uosmo', amount: '0' }],
-      80000,
-      1,
-    );
-
-    const signedTx = registry.encode({
-      typeUrl: '/cosmos.tx.v1beta1.TxRaw',
+    const txBodyEncodeObject = {
+      typeUrl: '/cosmos.tx.v1beta1.TxBody',
       value: {
-        bodyBytes: registry.encode({
-          typeUrl: '/cosmos.tx.v1beta1.TxBody',
-          value: {
-            messages: [msgExecMsg],
-            memo: 'osmopixel (107,151,12)',
-          },
-        }),
-        authInfoBytes: registry.encode({
-          typeUrl: '/cosmos.tx.v1beta1.AuthInfo',
-          value: {
-            signerInfos: [
-              {
-                publicKey: Any.fromPartial({
-                  typeUrl: '/cosmos.crypto.secp256k1.PubKey',
-                  value: Uint8Array.from(PubKey.encode(pubkeyProto).finish()),
-                }),
-                modeInfo: {
-                  single: {
-                    mode: SignMode.SIGN_MODE_DIRECT,
-                  },
-                },
-                // sequence is from signed user's
-                sequence: sequence,
-              },
-            ],
-            fee: Fee.fromPartial({
-              amount: [{ denom: 'uosmo', amount: '0' }],
-              gasLimit: '80000',
-            }),
-          },
-        }),
-        signatures: [fromBase64(signResponse.signature.signature)],
+        messages: [grantMsg],
+        memo: 'Grant for MANYTHINGS',
       },
-    });
+    };
+    const txBodyBytes = registry.encode(txBodyEncodeObject);
 
-    console.log(
-      decodeTxRaw(
-        registry.encode({
-          typeUrl: '/cosmos.tx.v1beta1.TxRaw',
-          value: {
-            bodyBytes: registry.encode({
-              typeUrl: '/cosmos.tx.v1beta1.TxBody',
-              value: {
-                messages: [msgExecMsg],
-                memo: 'osmopixel (107,151,12)',
-              },
-            }),
-            authInfoBytes: authInfoBytes,
-            signatures: [fromBase64(signResponse.signature.signature)],
-          },
-        }),
+    const signDoc = makeSignDoc(
+      txBodyBytes,
+      makeAuthInfoBytes(
+        [{ pubkey, sequence }],
+        [{ denom: 'uosmo', amount: '0' }],
+        0,
       ),
-    );
-    const tx = TxRaw.fromPartial({
-      bodyBytes: registry.encode({
-        typeUrl: '/cosmos.tx.v1beta1.TxBody',
-        value: {
-          messages: [msgExecMsg],
-          memo: 'osmopixel (107,151,12)',
-        },
-      }),
-      authInfoBytes: authInfoBytes,
-      signatures: [fromBase64(signResponse.signature.signature)],
-    });
-    return window.keplr.sendTx(
       chainId,
-      registry.encode({
-        typeUrl: '/cosmos.tx.v1beta1.TxRaw',
-        value: {
-          bodyBytes: registry.encode({
-            typeUrl: '/cosmos.tx.v1beta1.TxBody',
-            value: {
-              messages: [msgExecMsg],
-              memo: 'osmopixel (107,151,12)',
-            },
-          }),
-          authInfoBytes: authInfoBytes,
-          signatures: [fromBase64(signResponse.signature.signature)],
-        },
-      }),
-      BroadcastMode.Block,
+      accountNumber,
     );
-    // }
+
+    const response = await offlineSigner.signDirect(
+      firstAccount.address,
+      signDoc,
+    );
+    console.log(response);
+    setSignResponse(JSON.stringify(response.signature));
   }, []);
 
   return (
     <Container>
       <ManythingsLogo src="/assets/manythings.png" />
       <Button onClick={onClick}>Generate Sign</Button>
+
+      {!!signResponse && (
+        <Textarea rows={5} disabled defaultValue={signResponse} />
+      )}
     </Container>
   );
 };
@@ -308,4 +150,12 @@ const Button = styled.button`
   font-weight: 500;
   font-size: 1.2rem;
   color: white;
+`;
+const Textarea = styled.textarea`
+  margin-top: 32px;
+  max-width: 800px;
+  width: 95%;
+  font-family: 'Platform';
+  color: white;
+  background-color: #27272a;
 `;

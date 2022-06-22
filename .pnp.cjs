@@ -2442,17 +2442,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["npm:0.27.1", {\
-          "packageLocation": "./.yarn/cache/@cosmjs-amino-npm-0.27.1-deb0c2dbb2-c558332eda.zip/node_modules/@cosmjs/amino/",\
-          "packageDependencies": [\
-            ["@cosmjs/amino", "npm:0.27.1"],\
-            ["@cosmjs/crypto", "npm:0.27.1"],\
-            ["@cosmjs/encoding", "npm:0.27.1"],\
-            ["@cosmjs/math", "npm:0.27.1"],\
-            ["@cosmjs/utils", "npm:0.27.1"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:0.28.9", {\
           "packageLocation": "./.yarn/cache/@cosmjs-amino-npm-0.28.9-c2df05f1af-d596d18d39.zip/node_modules/@cosmjs/amino/",\
           "packageDependencies": [\
@@ -2499,23 +2488,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["npm:0.27.1", {\
-          "packageLocation": "./.yarn/cache/@cosmjs-crypto-npm-0.27.1-6e8500ec7c-d1773147a4.zip/node_modules/@cosmjs/crypto/",\
-          "packageDependencies": [\
-            ["@cosmjs/crypto", "npm:0.27.1"],\
-            ["@cosmjs/encoding", "npm:0.27.1"],\
-            ["@cosmjs/math", "npm:0.27.1"],\
-            ["@cosmjs/utils", "npm:0.27.1"],\
-            ["bip39", "npm:3.0.4"],\
-            ["bn.js", "npm:5.2.1"],\
-            ["elliptic", "npm:6.5.4"],\
-            ["js-sha3", "npm:0.8.0"],\
-            ["libsodium-wrappers", "npm:0.7.10"],\
-            ["ripemd160", "npm:2.0.2"],\
-            ["sha.js", "npm:2.4.11"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:0.28.9", {\
           "packageLocation": "./.yarn/cache/@cosmjs-crypto-npm-0.28.9-1077aac09c-713ce549eb.zip/node_modules/@cosmjs/crypto/",\
           "packageDependencies": [\
@@ -2556,16 +2528,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@cosmjs-encoding-npm-0.26.8-8a4aad452d-a680143951.zip/node_modules/@cosmjs/encoding/",\
           "packageDependencies": [\
             ["@cosmjs/encoding", "npm:0.26.8"],\
-            ["base64-js", "npm:1.5.1"],\
-            ["bech32", "npm:1.1.4"],\
-            ["readonly-date", "npm:1.0.0"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
-        ["npm:0.27.1", {\
-          "packageLocation": "./.yarn/cache/@cosmjs-encoding-npm-0.27.1-ee7b5f4632-34dad88ee6.zip/node_modules/@cosmjs/encoding/",\
-          "packageDependencies": [\
-            ["@cosmjs/encoding", "npm:0.27.1"],\
             ["base64-js", "npm:1.5.1"],\
             ["bech32", "npm:1.1.4"],\
             ["readonly-date", "npm:1.0.0"]\
@@ -2616,20 +2578,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["fast-deep-equal", "npm:3.1.3"]\
           ],\
           "linkType": "HARD"\
-        }],\
-        ["npm:0.27.1", {\
-          "packageLocation": "./.yarn/cache/@cosmjs-launchpad-npm-0.27.1-19d4d489ba-7707a7a551.zip/node_modules/@cosmjs/launchpad/",\
-          "packageDependencies": [\
-            ["@cosmjs/launchpad", "npm:0.27.1"],\
-            ["@cosmjs/amino", "npm:0.27.1"],\
-            ["@cosmjs/crypto", "npm:0.27.1"],\
-            ["@cosmjs/encoding", "npm:0.27.1"],\
-            ["@cosmjs/math", "npm:0.27.1"],\
-            ["@cosmjs/utils", "npm:0.27.1"],\
-            ["axios", "npm:0.21.4"],\
-            ["fast-deep-equal", "npm:3.1.3"]\
-          ],\
-          "linkType": "HARD"\
         }]\
       ]],\
       ["@cosmjs/math", [\
@@ -2653,14 +2601,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@cosmjs-math-npm-0.26.8-d602e8fc4b-d37f059799.zip/node_modules/@cosmjs/math/",\
           "packageDependencies": [\
             ["@cosmjs/math", "npm:0.26.8"],\
-            ["bn.js", "npm:5.2.1"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
-        ["npm:0.27.1", {\
-          "packageLocation": "./.yarn/cache/@cosmjs-math-npm-0.27.1-102dc0357e-0b1d91eb7c.zip/node_modules/@cosmjs/math/",\
-          "packageDependencies": [\
-            ["@cosmjs/math", "npm:0.27.1"],\
             ["bn.js", "npm:5.2.1"]\
           ],\
           "linkType": "HARD"\
@@ -2851,13 +2791,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@cosmjs-utils-npm-0.26.8-7ec037421c-de34c88c1f.zip/node_modules/@cosmjs/utils/",\
           "packageDependencies": [\
             ["@cosmjs/utils", "npm:0.26.8"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
-        ["npm:0.27.1", {\
-          "packageLocation": "./.yarn/cache/@cosmjs-utils-npm-0.27.1-fb7b54b935-b48466efd7.zip/node_modules/@cosmjs/utils/",\
-          "packageDependencies": [\
-            ["@cosmjs/utils", "npm:0.27.1"]\
           ],\
           "linkType": "HARD"\
         }],\
@@ -6063,8 +5996,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["frontend", "workspace:frontend"],\
             ["@cosmjs/amino", "npm:0.26.8"],\
-            ["@cosmjs/encoding", "npm:0.28.9"],\
-            ["@cosmjs/launchpad", "npm:0.27.1"],\
             ["@cosmjs/proto-signing", "npm:0.26.8"],\
             ["@cosmjs/stargate", "npm:0.26.8"],\
             ["@keplr-wallet/proto-types", "npm:0.10.5"],\
