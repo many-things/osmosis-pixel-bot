@@ -28,10 +28,9 @@ export const main = async () => {
   const txMessages = createTxMessage(chainInfo, account.address);
   const rawTx = await createTx(
     client,
-    chainInfo,
     account.address,
     txMessages,
-    'osmopixel (0,0,4)',
+    'osmopixel (0,0,0)',
   );
   console.log(rawTx);
   const signedTx = await signTx(privateKey, rawTx, chainInfo);

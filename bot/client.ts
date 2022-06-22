@@ -12,6 +12,7 @@ import {
 } from '@cosmjs/proto-signing';
 import { GeneratedType, Registry } from '@cosmjs/proto-signing';
 import { StargateClient } from '@cosmjs/stargate';
+import { MsgExec } from 'cosmjs-types/cosmos/authz/v1beta1/tx';
 import { MsgMultiSend, MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx';
 import {
   MsgFundCommunityPool,
@@ -93,6 +94,7 @@ export interface RewardAmount {
 }
 
 const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [
+  ['/cosmos.authz.v1beta1.MsgExec', MsgExec],
   ['/cosmos.bank.v1beta1.MsgSend', MsgSend],
   ['/cosmos.bank.v1beta1.MsgMultiSend', MsgMultiSend],
   ['/cosmos.distribution.v1beta1.MsgFundCommunityPool', MsgFundCommunityPool],
@@ -174,24 +176,33 @@ export const createTxMessage = (
   console.log({ walletAddress });
   messages.push({
     typeUrl: '/cosmos.bank.v1beta1.MsgSend',
-    value: {
-      fromAddress: walletAddress,
-      toAddress: walletAddress,
-      amount: [
-        {
-          amount: '1',
-          denom: chainInformation.denom,
-        },
-      ],
-    },
+    value: MsgSend.encode(
+      MsgSend.fromPartial({
+        fromAddress: walletAddress,
+        toAddress: walletAddress,
+        amount: [
+          {
+            amount: '1',
+            denom: chainInformation.denom,
+          },
+        ],
+      }),
+    ).finish(),
   });
 
-  return messages;
+  return [
+    {
+      typeUrl: '/cosmos.authz.v1beta1.MsgExec',
+      value: {
+        grantee: walletAddress,
+        msgs: messages,
+      },
+    },
+  ];
 };
 
 export const createTx = async (
   client: StargateClient,
-  chainInformation: ChainInformation,
   delegatorAddress: string,
   messages: any[],
   memo: string,
