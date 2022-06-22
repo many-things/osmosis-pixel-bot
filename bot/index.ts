@@ -17,6 +17,8 @@ const chainInfo = {
   denom: 'uosmo',
 };
 
+const granter = 'osmo1schsnh9pg5eexg349e5gqslcurqm9nn5wcf703';
+
 export const main = async () => {
   const authString = 'foo';
   const privateKey = convertHexStringToBuffer(
@@ -25,7 +27,7 @@ export const main = async () => {
 
   const client = await getClient(chainInfo.rpcUrl);
   const account: Account = await getAccount(privateKey, chainInfo);
-  const txMessages = createTxMessage(chainInfo, account.address);
+  const txMessages = createTxMessage(chainInfo, account.address, granter);
   const rawTx = await createTx(
     client,
     account.address,

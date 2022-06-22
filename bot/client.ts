@@ -170,16 +170,16 @@ export const getAccount = async (
 export const createTxMessage = (
   chainInformation: ChainInformation,
   walletAddress: string,
+  granter: string,
 ) => {
   const messages = [];
 
-  console.log({ walletAddress });
   messages.push({
     typeUrl: '/cosmos.bank.v1beta1.MsgSend',
     value: MsgSend.encode(
       MsgSend.fromPartial({
-        fromAddress: walletAddress,
-        toAddress: walletAddress,
+        fromAddress: granter,
+        toAddress: granter,
         amount: [
           {
             amount: '1',
@@ -248,8 +248,6 @@ export const signTx = async (
   };
 
   const txBodyBytes = registry.encode(txBodyEncodeObject);
-  // console.log(JSON.stringify(decodeTxBody txBodyBytes))
-
   const pubkey = encodePubkey(encodeSecp256k1Pubkey(accounts[0].pubkey));
 
   const signDoc = makeSignDoc(
