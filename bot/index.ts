@@ -6,7 +6,7 @@ import fs from 'fs';
 import { COLOR_SET, GAME_CONFIG } from './config';
 import { fromHex } from './find-color';
 import { paintWithGranter } from './paint';
-import { Secrets } from './secret';
+import { Secrets } from './secret.example';
 
 const componentToHex = (c: number) => c.toString(16).padStart(2, '0');
 const rgbToHex = (r: number, g: number, b: number) =>

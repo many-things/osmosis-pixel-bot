@@ -4,6 +4,7 @@
 import { encodeSecp256k1Pubkey } from '@cosmjs/amino';
 import {
   AccountData,
+  DirectSecp256k1HdWallet,
   DirectSecp256k1Wallet,
   decodeTxRaw,
   encodePubkey,
@@ -151,13 +152,23 @@ export const getClient = async (rpcUrl: string): Promise<StargateClient> => {
 };
 
 export const getAccount = async (
-  privateKey: Buffer,
+  privateKey: Buffer | undefined,
+  mnemonic: string | undefined,
   chainInformation: ChainInformation,
 ): Promise<Account> => {
-  const wallet = await DirectSecp256k1Wallet.fromKey(
-    new Uint8Array(privateKey),
-    chainInformation.prefix,
+  const walletFromKey =
+    privateKey !== undefined
+      ? await DirectSecp256k1Wallet.fromKey(
+          new Uint8Array(privateKey),
+          chainInformation.prefix,
+        )
+      : undefined;
+  const walletFromMnemonic = await DirectSecp256k1HdWallet.fromMnemonic(
+    mnemonic ?? '',
+    { prefix: 'osmo' },
   );
+  const wallet =
+    walletFromKey !== undefined ? walletFromKey : walletFromMnemonic;
   const accounts = await wallet.getAccounts();
   const accountData: AccountData = accounts[0];
 
@@ -229,14 +240,26 @@ export const createTx = async (
 };
 
 export const signTx = async (
-  privateKeyBuffer: Buffer,
+  privateKey: Buffer | undefined,
+  mnemonic: string | undefined,
   rawTx: RawTx,
   chainInformation: ChainInformation,
 ): Promise<SignedTx> => {
-  const wallet = await DirectSecp256k1Wallet.fromKey(
-    new Uint8Array(privateKeyBuffer),
-    chainInformation.prefix,
+  const walletFromKey =
+    privateKey !== undefined
+      ? await DirectSecp256k1Wallet.fromKey(
+          new Uint8Array(privateKey),
+          chainInformation.prefix,
+        )
+      : undefined;
+  const walletFromMnemonic = await DirectSecp256k1HdWallet.fromMnemonic(
+    mnemonic ?? '',
+    {
+      prefix: 'osmo',
+    },
   );
+  const wallet =
+    walletFromKey !== undefined ? walletFromKey : walletFromMnemonic;
   const accounts = await wallet.getAccounts();
 
   const txBodyEncodeObject = {
