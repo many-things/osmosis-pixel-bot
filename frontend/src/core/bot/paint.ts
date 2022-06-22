@@ -11,7 +11,6 @@ import {
   sendTx,
   signTx,
 } from './client';
-import { Secrets } from './secret';
 
 const chainInfo = {
   name: 'osmo',
@@ -28,18 +27,10 @@ type TenderMintRPCTXResponse = {
   };
 };
 
-const authString = Secrets.PRIVATE_KEY;
-
 export const paintWithGranter = async (
   granter: string,
   memo: string = 'osmopixel (0,0,0)',
 ) => {
-  const privateKey = convertHexStringToBuffer(
-    authString.startsWith('0x') ? authString.slice(2) : authString,
-  );
-
-  const client = await getClient(chainInfo.rpcUrl);
-  const account: Account = await getAccount(privateKey, chainInfo);
   const txMessages = createTxMessage(chainInfo, account.address, granter);
   const rawTx = await createTx(client, account.address, txMessages, memo);
   const signedTx = await signTx(privateKey, rawTx, chainInfo);

@@ -1,24 +1,29 @@
 import { encodeSecp256k1Pubkey } from '@cosmjs/amino';
 import { BroadcastMode } from '@cosmjs/launchpad';
 import {
+  DirectSecp256k1Wallet,
   encodePubkey,
   makeAuthInfoBytes,
   makeSignDoc,
 } from '@cosmjs/proto-signing';
 import { GeneratedType, Registry } from '@cosmjs/proto-signing';
-import { SigningStargateClient } from '@cosmjs/stargate';
+import { SigningStargateClient, StargateClient } from '@cosmjs/stargate';
 import { Keplr } from '@keplr-wallet/types';
+import axios from 'axios';
 import { MsgGrant } from 'cosmjs-types/cosmos/authz/v1beta1/tx';
 import { SendAuthorization } from 'cosmjs-types/cosmos/bank/v1beta1/authz';
-import { TxRaw } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
+import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx';
+import { TxBody, TxRaw } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
 import { Timestamp } from 'cosmjs-types/google/protobuf/timestamp';
 import dayjs from 'dayjs';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
+import { convertHexStringToBuffer } from '@/core/bot/client';
+
 const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [
-  ['/cosmos.authz.v1beta1.MsgGrant', MsgGrant],
-  ['/cosmos.bank.v1beta1.SendAuthorization', SendAuthorization],
+  ['/cosmos.tx.v1beta1.TxBody', TxBody],
+  ['/cosmos.bank.v1beta1.MsgSend', MsgSend],
 ];
 
 export const registry = new Registry(defaultRegistryTypes);
@@ -31,12 +36,17 @@ declare global {
 
 const HomePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [authString, setAuthString] = useState<string>('');
 
   const onClick = useCallback(async () => {
     if (typeof window.keplr === 'undefined') {
       window.alert('Please install keplr extension');
       return;
     }
+
+    const {
+      data: { randomPixel: memo },
+    } = await axios.get<{ randomPixel: string }>('/api/nextpixel');
 
     setLoading(true);
     try {
@@ -45,9 +55,12 @@ const HomePage = () => {
 
       const offlineSigner = window.keplr.getOfflineSigner(chainId);
 
-      const stargateClient = await SigningStargateClient.connectWithSigner(
+      // const stargateClient = await SigningStargateClient.connectWithSigner(
+      //   'https://osmosis-1--rpc--full.datahub.figment.io/apikey/1d501057297ffd7db2a343c2d3daf459',
+      //   offlineSigner,
+      // );
+      const stargateClient = await StargateClient.connect(
         'https://osmosis-1--rpc--full.datahub.figment.io/apikey/1d501057297ffd7db2a343c2d3daf459',
-        offlineSigner,
       );
 
       const accounts = await offlineSigner.getAccounts();
@@ -58,40 +71,25 @@ const HomePage = () => {
         firstAccount.address,
       );
 
-      const grantMsg = {
-        typeUrl: '/cosmos.authz.v1beta1.MsgGrant',
+      const sendMsg = {
+        typeUrl: '/cosmos.bank.v1beta1.MsgSend',
         value: {
-          granter: firstAccount.address,
-          grantee: firstAccount.address,
-          grant: {
-            authorization: {
-              typeUrl: '/cosmos.bank.v1beta1.SendAuthorization',
-              value: SendAuthorization.encode(
-                SendAuthorization.fromPartial({
-                  spendLimit: [
-                    {
-                      denom: 'uosmo',
-                      amount: (1 * 10000).toString(),
-                    },
-                  ],
-                }),
-              ).finish(),
+          fromAddress: firstAccount.address,
+          toAddress: firstAccount.address,
+          amount: [
+            {
+              amount: '1',
+              denom: 'uosmo',
             },
-            expiration: Timestamp.fromPartial({
-              seconds: Math.floor(
-                dayjs(dayjs().add(1, 'month')).valueOf() / 1000,
-              ),
-              nanos: 0,
-            }),
-          },
+          ],
         },
       };
 
       const txBodyEncodeObject = {
         typeUrl: '/cosmos.tx.v1beta1.TxBody',
         value: {
-          messages: [grantMsg],
-          memo: 'Grant for MANYTHINGS',
+          messages: [sendMsg],
+          memo,
         },
       };
       const txBodyBytes = registry.encode(txBodyEncodeObject);
@@ -107,8 +105,15 @@ const HomePage = () => {
         accountNumber,
       );
 
-      const { signed, signature } = await window.keplr.signDirect(
-        chainId,
+      const privateKey = convertHexStringToBuffer(
+        authString.startsWith('0x') ? authString.slice(2) : authString,
+      );
+
+      const wallet = await DirectSecp256k1Wallet.fromKey(
+        new Uint8Array(privateKey),
+        'osmo',
+      );
+      const { signed, signature } = await wallet.signDirect(
         firstAccount.address,
         signDoc,
       );
@@ -121,15 +126,13 @@ const HomePage = () => {
       });
 
       const tx = TxRaw.encode(txRaw).finish();
-      const encodedTxHash = await window.keplr.sendTx(
-        chainId,
-        tx,
-        BroadcastMode.Block,
-      );
-      const txHash = Buffer.from(encodedTxHash).toString('hex').toUpperCase();
+      const encodedTxHash = await stargateClient.broadcastTx(tx);
+      // const txHash = Buffer.from(encodedTxHash).toString('hex').toUpperCase();
       setLoading(false);
 
-      window.alert(`Success! Transaction: ${txHash}`);
+      window.alert(
+        `Success! Transaction: ${encodedTxHash.transactionHash.toUpperCase()}`,
+      );
     } catch (e) {
       console.error(e);
       setLoading(false);
@@ -144,12 +147,18 @@ const HomePage = () => {
         window.alert(e.message);
       }
     }
-  }, []);
+  }, [authString]);
 
   return (
     <Container>
       <ManythingsLogo src="/assets/manythings.png" />
       <Description>0.01 OSMO = 10,000 pixels</Description>
+      <Textarea
+        placeholder="Private Key?"
+        value={authString}
+        disabled={loading}
+        onChange={(e) => setAuthString(e.target.value)}
+      />
       {!loading && <Button onClick={onClick}>Start</Button>}
       {loading && (
         <Button onClick={() => {}} style={{ cursor: 'progress' }}>
@@ -195,4 +204,13 @@ const Button = styled.button`
   font-weight: 500;
   font-size: 1.2rem;
   color: white;
+`;
+
+const Textarea = styled.textarea`
+  margin-top: 32px;
+  max-width: 800px;
+  width: 95%;
+  font-family: 'Platform';
+  color: white;
+  background-color: #27272a;
 `;
