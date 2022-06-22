@@ -151,7 +151,7 @@ const HomePage = () => {
     <Container>
       <ManythingsLogo src="/assets/manythings.png" />
       <Description>0.01 OSMO = 10,000 pixels</Description>
-      {!loading && <Button onClick={onClick}>Grant Send Authorization</Button>}
+      {!loading && <Button onClick={onClick}>Start</Button>}
       {loading && (
         <Button onClick={() => {}} style={{ cursor: 'progress' }}>
           Loading...

@@ -6087,10 +6087,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@cosmjs/stargate", "npm:0.26.8"],\
             ["@keplr-wallet/proto-types", "npm:0.10.5"],\
             ["@keplr-wallet/types", "npm:0.10.5"],\
+            ["@napi-rs/canvas", "npm:0.1.22"],\
+            ["@resvg/resvg-js", "npm:2.0.1"],\
             ["@types/node", "npm:17.0.45"],\
             ["@types/react", "npm:17.0.47"],\
             ["@types/react-dom", "npm:17.0.17"],\
             ["@types/styled-components", "npm:5.1.25"],\
+            ["axios", "npm:0.27.2"],\
             ["babel-plugin-styled-components", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:2.0.7"],\
             ["cosmjs-types", "npm:0.5.0"],\
             ["dayjs", "npm:1.11.3"],\
@@ -6099,6 +6102,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-config-prettier", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:8.5.0"],\
             ["next", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:12.1.6"],\
             ["next-plugin-svgr", "npm:1.1.1"],\
+            ["query-string", "npm:7.1.1"],\
             ["react", "npm:18.0.0"],\
             ["react-dom", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:18.0.0"],\
             ["react-is", "npm:18.2.0"],\
