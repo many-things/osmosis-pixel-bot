@@ -6,7 +6,7 @@ import fs from 'fs';
 import { COLOR_SET, GAME_CONFIG } from './config';
 import { fromHex } from './find-color';
 import { paintWithGranter } from './paint';
-import { Secrets } from './secret.example';
+import { Secrets } from './secret';
 
 const componentToHex = (c: number) => c.toString(16).padStart(2, '0');
 const rgbToHex = (r: number, g: number, b: number) =>
@@ -26,6 +26,38 @@ const updatedPixels = async () => {
     'https://pixels-osmosis.keplr.app/pixels',
   );
   console.log('[Success] Fetched latest game state!');
+
+  const canvas = createCanvas(
+    GAME_CONFIG.PIXEL_WIDTH * GAME_CONFIG.PIXEL_SIZE,
+    GAME_CONFIG.PIXEL_HEIGHT * GAME_CONFIG.PIXEL_SIZE,
+  );
+  const ctx = canvas.getContext('2d');
+
+  for (const xStr of Object.keys(pixels)) {
+    const x = parseInt(xStr);
+    if (!Number.isNaN(x)) {
+      const yPixels = pixels[x] ?? {};
+      for (const yStr of Object.keys(yPixels)) {
+        const y = parseInt(yStr);
+        if (!Number.isNaN(y)) {
+          const color = yPixels[y];
+          if (color != null && color >= 0 && color < COLOR_SET.length) {
+            ctx.fillStyle = COLOR_SET[color];
+            ctx.fillRect(
+              x * GAME_CONFIG.PIXEL_SIZE,
+              y * GAME_CONFIG.PIXEL_SIZE,
+              GAME_CONFIG.PIXEL_SIZE,
+              GAME_CONFIG.PIXEL_SIZE,
+            );
+          }
+        }
+      }
+    }
+  }
+
+  const newCanvasImage = await canvas.encode('png');
+  fs.writeFileSync('./assets/pixels.png', newCanvasImage);
+
   return pixels;
 };
 

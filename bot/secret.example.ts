@@ -8,11 +8,11 @@ type Secret = (
       MNEMONIC: string;
     }
 ) & {
-  granterAddrs: string[];
+  granterAddrs: [string];
 };
 
 export const Secrets: Secret = {
   PRIVATE_KEY: 'foopriv',
   MNEMONIC: undefined,
-  granterAddrs: ['foopub', 'bar'],
+  granterAddrs: ['foopub'],
 };

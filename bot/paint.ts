@@ -11,7 +11,7 @@ import {
   sendTx,
   signTx,
 } from './client';
-import { Secrets } from './secret.example';
+import { Secrets } from './secret';
 
 const chainInfo = {
   name: 'osmo',
