@@ -5,6 +5,7 @@ import fs from 'fs';
 
 import { COLOR_SET, GAME_CONFIG } from './config';
 import { fromHex } from './find-color';
+import { manythingsSVG } from './manythingsSVG';
 
 const componentToHex = (c: number) => c.toString(16).padStart(2, '0');
 const rgbToHex = (r: number, g: number, b: number) =>
@@ -58,7 +59,6 @@ export const getDrawablePixels = async () => {
     }
   }
 
-  const manythingsSVG = await fs.promises.readFile('./assets/manythings.svg');
   const image = new Image();
   const resvg = new Resvg(manythingsSVG, {});
   const pngData = resvg.render();

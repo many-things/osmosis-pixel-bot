@@ -152,6 +152,8 @@ const run = async (granterAddrs: string[]) => {
     .sort((a, b) => a.sort - b.sort)
     .map(({ value }) => value);
 
+  console.log({ paintCount });
+
   for (const memo of shuffled) {
     const walletAddress = drawableAddrs.pop();
     if (!walletAddress) {

@@ -1,7 +1,6 @@
 import { encodeSecp256k1Pubkey } from '@cosmjs/amino';
 import { BroadcastMode } from '@cosmjs/launchpad';
 import {
-  decodeTxRaw,
   encodePubkey,
   makeAuthInfoBytes,
   makeSignDoc,

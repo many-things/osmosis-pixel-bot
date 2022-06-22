@@ -17,3 +17,10 @@ export const Secrets = {
 yarn
 yarn workspace bot start
 ```
+
+### 3. 프론트엔드
+
+```bash
+yarn dlx @yarnpkg/sdks
+yarn workspace frontend dev
+```
