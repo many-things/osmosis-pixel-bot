@@ -27,9 +27,9 @@ type TenderMintRPCTXResponse = {
   };
 };
 
-export const paintWithGranter = async (
+export const paint = async (
   authString: string,
-  granterAddr: string,
+  walletAddress: string,
   memo: string = 'osmopixel (0,0,0)',
 ) => {
   const privateKey = convertHexStringToBuffer(
@@ -38,12 +38,12 @@ export const paintWithGranter = async (
 
   const client = await getClient(chainInfo.rpcUrl);
   const account: Account = await getAccount(privateKey, chainInfo);
-  const txMessages = createTxMessage(chainInfo, account.address, granterAddr);
+  const txMessages = createTxMessage(chainInfo, walletAddress);
   const rawTx = await createTx(client, account.address, txMessages, memo);
   const signedTx = await signTx(privateKey, rawTx, chainInfo);
 
   console.log('[Transaction] Committing transaction...', {
-    granterAddr,
+    walletAddress,
     memo,
   });
   const txHash = await sendTx(client, signedTx);

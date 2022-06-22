@@ -170,35 +170,24 @@ export const getAccount = async (
 export const createTxMessage = (
   chainInformation: ChainInformation,
   walletAddress: string,
-  granter: string,
 ) => {
   const messages = [];
 
   messages.push({
     typeUrl: '/cosmos.bank.v1beta1.MsgSend',
-    value: MsgSend.encode(
-      MsgSend.fromPartial({
-        fromAddress: granter,
-        toAddress: granter,
-        amount: [
-          {
-            amount: '1',
-            denom: chainInformation.denom,
-          },
-        ],
-      }),
-    ).finish(),
+    value: {
+      fromAddress: walletAddress,
+      toAddress: walletAddress,
+      amount: [
+        {
+          amount: '1',
+          denom: chainInformation.denom,
+        },
+      ],
+    },
   });
 
-  return [
-    {
-      typeUrl: '/cosmos.authz.v1beta1.MsgExec',
-      value: {
-        grantee: walletAddress,
-        msgs: messages,
-      },
-    },
-  ];
+  return messages;
 };
 
 export const createTx = async (
@@ -266,7 +255,10 @@ export const signTx = async (
     rawTx.signerData.accountNumber,
   );
 
-  const { signature } = await wallet.signDirect(accounts[0].address, signDoc);
+  const { signature, signed } = await wallet.signDirect(
+    accounts[0].address,
+    signDoc,
+  );
 
   const txRaw = TxRaw.fromPartial({
     bodyBytes: signDoc.bodyBytes,
