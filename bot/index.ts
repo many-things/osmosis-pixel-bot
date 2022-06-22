@@ -5,7 +5,7 @@ import fs from 'fs';
 
 import { COLOR_SET, GAME_CONFIG, getSecrets } from './config';
 import { fromHex } from './find-color';
-import { paintWithGranter } from './paint';
+import { paint } from './paint';
 
 const componentToHex = (c: number) => c.toString(16).padStart(2, '0');
 const rgbToHex = (r: number, g: number, b: number) =>
@@ -198,7 +198,7 @@ const run = async (
       break;
     }
     const { privateKey, address } = wallet;
-    await paintWithGranter(privateKey, address, memo).catch((e) => {
+    await paint(privateKey, address, memo).catch((e) => {
       console.log('[Transaction] Error', e.response?.data ?? e.message ?? null);
       // console.error(e);
       return 0;
