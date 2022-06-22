@@ -1,0 +1,29 @@
+{
+  "name": "executor",
+  "private": true,
+  "scripts": {
+    "start": "ts-node src/main.ts"
+  },
+  "dependencies": {
+    "@cosmjs/amino": "^0.28.9",
+    "@cosmjs/proto-signing": "^0.28.9",
+    "@cosmjs/stargate": "^0.28.9",
+    "@keplr-wallet/provider": "^0.10.5",
+    "@napi-rs/canvas": "^0.1.22",
+    "@resvg/resvg-js": "^2.0.1",
+    "axios": "^0.27.2",
+    "bech32": "^2.0.0",
+    "bn.js": "^5.2.1",
+    "cosmjs-types": "^0.5.0",
+    "lodash": "^4.17.21",
+    "query-string": "^7.1.1"
+  },
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^3.2.0",
+    "@types/lodash": "^4.14.182",
+    "@types/node": "^18.0.0",
+    "prettier": "^2.7.1",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.4"
+  }
+}
