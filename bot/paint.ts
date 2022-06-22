@@ -27,11 +27,12 @@ type TenderMintRPCTXResponse = {
   };
 };
 
+const authString = 'foo';
+
 export const paintWithGranter = async (
   granter: string,
   memo: string = 'osmopixel (0,0,0)',
 ) => {
-  const authString = 'foo';
   const privateKey = convertHexStringToBuffer(
     authString.startsWith('0x') ? authString.slice(2) : authString,
   );

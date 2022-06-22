@@ -5,6 +5,7 @@ import fs from 'fs';
 
 import { COLOR_SET, GAME_CONFIG } from './config';
 import { fromHex } from './find-color';
+import { paintWithGranter } from './paint';
 
 const componentToHex = (c: number) => c.toString(16).padStart(2, '0');
 const rgbToHex = (r: number, g: number, b: number) =>
@@ -146,11 +147,15 @@ const run = async (
           return;
         }
         const memo = `osmopixel (${pixelCoordX},${pixelCoordY},${givenColorIndex})`;
-        console.log({ walletAddress, memo });
+        // console.log({ walletAddress, memo });
 
-        // FIXME: change to transaction included block
-        const latestBlock = await getLatestBlockNumber();
-        mutate(walletAddress, latestBlock ?? 0);
+        const includedBlock = await paintWithGranter(walletAddress, memo).catch(
+          (e) => {
+            console.error(e);
+            return 0;
+          },
+        );
+        mutate(walletAddress, includedBlock);
       }
     }
   }
@@ -184,7 +189,8 @@ const getLatestBlockNumber = async () => {
 const delayForMilliseconds = async (ms: number) =>
   new Promise<void>((resolve) => setTimeout(resolve, ms));
 
-const granterAddrs = ['osmo1schsnh9pg5eexg349e5gqslcurqm9nn5wcf703'];
+const granterAddrs = ['osmo15zysaya5j34vy2cqd7y9q8m3drjpy0d2lvmkpa'];
+
 const lastDrawnBlockNumbers: { [address: string]: number | undefined } = {};
 const main = async () => {
   let count = 0;
