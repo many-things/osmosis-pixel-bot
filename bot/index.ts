@@ -29,10 +29,7 @@ const updatedPixels = async () => {
   return pixels;
 };
 
-const run = async (
-  granterAddrs: string[],
-  mutate: (walletAddress: string, blockNumber: number) => void,
-) => {
+const run = async (granterAddrs: string[]) => {
   const pixels = await updatedPixels();
   // const pixels: ResponsePixels = JSON.parse(
   //   fs.readFileSync('./assets/pixels.json', 'utf8'),
@@ -90,6 +87,7 @@ const run = async (
 
   let paintCount = 0;
   let drawableAddrs = [...granterAddrs];
+  let drawablePixels = new Set<string>();
 
   for (let x = 0; x < pngData.width; x++) {
     for (let y = 0; y < pngData.height; y++) {
@@ -142,30 +140,30 @@ const run = async (
         xPixels[pixelCoordX] = givenColorIndex;
         paintCount += 1;
 
-        const walletAddress = drawableAddrs.pop();
-        if (!walletAddress) {
-          // all out of drawable addrs
-          return;
-        }
         const memo = `osmopixel (${pixelCoordX},${pixelCoordY},${givenColorIndex})`;
         // console.log({ walletAddress, memo });
-
-        const includedBlock = await paintWithGranter(walletAddress, memo).catch(
-          (e) => {
-            console.log(
-              '[Transaction] Error',
-              e.response?.data ?? e.message ?? null,
-            );
-            // console.error(e);
-            return 0;
-          },
-        );
-        mutate(walletAddress, includedBlock);
+        drawablePixels.add(memo);
       }
     }
   }
 
-  console.log(paintCount);
+  const shuffled = [...drawablePixels]
+    .map((value) => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+
+  for (const memo of shuffled) {
+    const walletAddress = drawableAddrs.pop();
+    if (!walletAddress) {
+      break;
+    }
+    await paintWithGranter(walletAddress, memo).catch((e) => {
+      console.log('[Transaction] Error', e.response?.data ?? e.message ?? null);
+      // console.error(e);
+      return 0;
+    });
+  }
+
   const newCanvasImage = await canvas.encode('png');
   fs.writeFileSync('./assets/new-pixels.png', newCanvasImage);
 };
@@ -196,34 +194,36 @@ const delayForMilliseconds = async (ms: number) =>
 
 const granterAddrs = Secrets.granterAddrs;
 
-const lastDrawnBlockNumbers: { [address: string]: number | undefined } = {};
 const main = async () => {
   let count = 0;
   while (1) {
+    count += 1;
     const latestBlock = await getLatestBlockNumber();
+    console.log('\n=======\n');
     console.log(
       `${count.toLocaleString()}st Run, Latest block: ${latestBlock}`,
     );
-    const drawableAddrs = granterAddrs.filter((granter) => {
-      const lastDrawnBlock = lastDrawnBlockNumbers[granter] ?? null;
-      if ((lastDrawnBlock ?? 0) + 30 < (latestBlock ?? 0)) {
-        return true;
-      }
-      return false;
+
+    const drawableAfterBlocksByIndex = await Promise.all<number>(
+      granterAddrs.map(async (granterAddrs) => {
+        const { data } = await axios
+          .get(`https://pixels-osmosis.keplr.app/permission/${granterAddrs}`)
+          .catch(() => ({ data: { remainingBlocks: 0 } }));
+        return data.remainingBlocks;
+      }),
+    );
+    const drawableAddrs = granterAddrs.filter((_granter, index) => {
+      return drawableAfterBlocksByIndex[index] === 0;
     });
+
     console.log({ drawableAddrs });
 
     if (drawableAddrs.length > 0) {
-      const mutate = (walletAddr: string, blockNumber: number) => {
-        lastDrawnBlockNumbers[walletAddr] = blockNumber;
-      };
-
-      await run(drawableAddrs, mutate);
+      await run(drawableAddrs);
     }
 
-    console.log('Delay for 30s...');
-    // (6.5 * 1_000 * 30) / 4
-    await delayForMilliseconds(30_000);
+    console.log('Delay for 5s...');
+    await delayForMilliseconds(5_000);
   }
 };
 
