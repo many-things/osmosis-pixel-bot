@@ -63,7 +63,7 @@ const HomePage = () => {
         typeUrl: '/cosmos.authz.v1beta1.MsgGrant',
         value: {
           granter: firstAccount.address,
-          grantee: 'osmo15zysaya5j34vy2cqd7y9q8m3drjpy0d2lvmkpa',
+          grantee: firstAccount.address,
           grant: {
             authorization: {
               typeUrl: '/cosmos.bank.v1beta1.SendAuthorization',
