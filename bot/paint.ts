@@ -28,11 +28,9 @@ type TenderMintRPCTXResponse = {
   };
 };
 
-const authString = Secrets.PRIVATE_KEY;
-const mnemonic = Secrets.MNEMONIC;
-
 export const paintWithGranter = async (
-  granter: string,
+  authString: string,
+  granterAddr: string,
   memo: string = 'osmopixel (0,0,0)',
 ) => {
   const privateKey =
@@ -43,12 +41,15 @@ export const paintWithGranter = async (
       : undefined;
 
   const client = await getClient(chainInfo.rpcUrl);
-  const account: Account = await getAccount(privateKey, mnemonic, chainInfo);
-  const txMessages = createTxMessage(chainInfo, account.address, granter);
+  const account: Account = await getAccount(privateKey, chainInfo);
+  const txMessages = createTxMessage(chainInfo, account.address, granterAddr);
   const rawTx = await createTx(client, account.address, txMessages, memo);
   const signedTx = await signTx(privateKey, mnemonic, rawTx, chainInfo);
 
-  console.log('[Transaction] Committing transaction...', { granter, memo });
+  console.log('[Transaction] Committing transaction...', {
+    granterAddr,
+    memo,
+  });
   const txHash = await sendTx(client, signedTx);
 
   const txInfo = await axios.get<TenderMintRPCTXResponse>(

@@ -61,7 +61,7 @@ const updatedPixels = async () => {
   return pixels;
 };
 
-const run = async (granterAddrs: string[]) => {
+const run = async (authString: string, granterAddr: string) => {
   const pixels = await updatedPixels();
   // const pixels: ResponsePixels = JSON.parse(
   //   fs.readFileSync('./assets/pixels.json', 'utf8'),
@@ -118,7 +118,7 @@ const run = async (granterAddrs: string[]) => {
   const offsetY = 98;
 
   let paintCount = 0;
-  let drawableAddrs = [...granterAddrs];
+  let drawableAddr = granterAddr;
   let drawablePixels = new Set<string>();
 
   for (let x = 0; x < pngData.width; x++) {
@@ -187,11 +187,11 @@ const run = async (granterAddrs: string[]) => {
   console.log({ paintCount });
 
   for (const memo of shuffled) {
-    const walletAddress = drawableAddrs.pop();
+    const walletAddress = drawableAddr;
     if (!walletAddress) {
       break;
     }
-    await paintWithGranter(walletAddress, memo).catch((e) => {
+    await paintWithGranter(authString, granterAddr, memo).catch((e) => {
       console.log('[Transaction] Error', e.response?.data ?? e.message ?? null);
       // console.error(e);
       return 0;
@@ -226,9 +226,11 @@ const getLatestBlockNumber = async () => {
 const delayForMilliseconds = async (ms: number) =>
   new Promise<void>((resolve) => setTimeout(resolve, ms));
 
-const granterAddrs = Secrets.granterAddrs;
-
 const main = async () => {
+  const granterAddrs = await Promise.all(
+    Secrets.granterAddrs.map((addr) => addr),
+  );
+
   let count = 0;
   while (1) {
     count += 1;
@@ -239,13 +241,25 @@ const main = async () => {
     );
 
     const drawableAfterBlocksByIndex = await Promise.all<number>(
-      granterAddrs.map(async (granterAddrs) => {
+      granterAddrs.map(async (addressPromise) => {
+        const granterAddr = addressPromise;
         const { data } = await axios
-          .get(`https://pixels-osmosis.keplr.app/permission/${granterAddrs}`)
-          .catch(() => ({ data: { remainingBlocks: 0 } }));
+          .get(`https://pixels-osmosis.keplr.app/permission/${granterAddr}`)
+          .then((res) => {
+            console.log(res.data);
+            return res;
+          })
+          .catch(() => {
+            console.log('catch');
+            return { data: { remainingBlocks: 0 } };
+          });
+
         return data.remainingBlocks;
       }),
     );
+
+    console.log(drawableAfterBlocksByIndex);
+
     const drawableAddrs = granterAddrs.filter((_granter, index) => {
       return drawableAfterBlocksByIndex[index] === 0;
     });
@@ -253,10 +267,15 @@ const main = async () => {
     console.log({ drawableAddrs });
 
     if (drawableAddrs.length > 0) {
-      await run(drawableAddrs);
+      drawableAddrs.forEach(async (drawableAddr) => {
+        const authString =
+          Secrets.PRIVATE_KEYS[granterAddrs.indexOf(drawableAddr)];
+
+        await run(authString!, drawableAddr);
+      });
     }
 
-    console.log('Delay for 5s...');
+    // console.log('Delay for 5s...');
     await delayForMilliseconds(5_000);
   }
 };
