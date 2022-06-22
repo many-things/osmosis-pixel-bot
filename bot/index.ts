@@ -3,10 +3,9 @@ import { Resvg } from '@resvg/resvg-js';
 import axios from 'axios';
 import fs from 'fs';
 
-import { COLOR_SET, GAME_CONFIG } from './config';
+import { COLOR_SET, GAME_CONFIG, getSecrets } from './config';
 import { fromHex } from './find-color';
 import { paintWithGranter } from './paint';
-import { Secrets, getSecrets } from './secret';
 
 const componentToHex = (c: number) => c.toString(16).padStart(2, '0');
 const rgbToHex = (r: number, g: number, b: number) =>
