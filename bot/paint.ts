@@ -11,6 +11,7 @@ import {
   sendTx,
   signTx,
 } from './client';
+import { Secrets } from './secret';
 
 const chainInfo = {
   name: 'osmo',
@@ -27,7 +28,7 @@ type TenderMintRPCTXResponse = {
   };
 };
 
-const authString = 'foo';
+const authString = Secrets.PRIVATE_KEY;
 
 export const paintWithGranter = async (
   granter: string,

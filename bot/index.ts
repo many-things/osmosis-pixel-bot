@@ -6,6 +6,7 @@ import fs from 'fs';
 import { COLOR_SET, GAME_CONFIG } from './config';
 import { fromHex } from './find-color';
 import { paintWithGranter } from './paint';
+import { Secrets } from './secret';
 
 const componentToHex = (c: number) => c.toString(16).padStart(2, '0');
 const rgbToHex = (r: number, g: number, b: number) =>
@@ -189,7 +190,7 @@ const getLatestBlockNumber = async () => {
 const delayForMilliseconds = async (ms: number) =>
   new Promise<void>((resolve) => setTimeout(resolve, ms));
 
-const granterAddrs = ['osmo15zysaya5j34vy2cqd7y9q8m3drjpy0d2lvmkpa'];
+const granterAddrs = Secrets.granterAddrs;
 
 const lastDrawnBlockNumbers: { [address: string]: number | undefined } = {};
 const main = async () => {
