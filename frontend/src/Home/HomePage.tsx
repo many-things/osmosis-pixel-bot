@@ -68,7 +68,7 @@ const HomePage = () => {
                 spendLimit: [
                   {
                     denom: 'uosmo',
-                    amount: '1',
+                    amount: (1 * 10000).toString(),
                   },
                 ],
               }),
@@ -130,6 +130,7 @@ const HomePage = () => {
   return (
     <Container>
       <ManythingsLogo src="/assets/manythings.png" />
+      <Description>0.01 OSMO = 10,000 pixels</Description>
       <Button onClick={onClick}>Grant Send Authorization</Button>
     </Container>
   );
@@ -149,6 +150,14 @@ const ManythingsLogo = styled.img`
   max-width: 800px;
   width: 95%;
   image-rendering: pixelated;
+`;
+const Description = styled.p`
+  margin: 0;
+  margin-top: 64px;
+
+  font-family: 'Platform';
+  font-size: 1.05rem;
+  color: white;
 `;
 const Button = styled.button`
   margin-top: 32px;
