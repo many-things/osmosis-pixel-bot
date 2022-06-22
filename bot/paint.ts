@@ -57,6 +57,6 @@ export const paintWithGranter = async (
   );
 
   const blockHeight = parseInt(txInfo.data.result.height);
-  console.log('[Transaction] Committed on ', { blockHeight });
+  console.log('[Transaction] Committed on ', { blockHeight, txHash });
   return blockHeight;
 };

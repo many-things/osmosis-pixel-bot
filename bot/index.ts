@@ -152,7 +152,11 @@ const run = async (
 
         const includedBlock = await paintWithGranter(walletAddress, memo).catch(
           (e) => {
-            console.error(e);
+            console.log(
+              '[Transaction] Error',
+              e.response?.data ?? e.message ?? null,
+            );
+            // console.error(e);
             return 0;
           },
         );
