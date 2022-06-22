@@ -4043,6 +4043,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/node", [\
+        ["npm:10.12.18", {\
+          "packageLocation": "./.yarn/cache/@types-node-npm-10.12.18-7c6aeb4e07-333cedae77.zip/node_modules/@types/node/",\
+          "packageDependencies": [\
+            ["@types/node", "npm:10.12.18"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["npm:11.11.6", {\
           "packageLocation": "./.yarn/cache/@types-node-npm-11.11.6-40abad0842-075f1c011c.zip/node_modules/@types/node/",\
           "packageDependencies": [\
@@ -4621,6 +4628,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["base-x", [\
+        ["npm:3.0.9", {\
+          "packageLocation": "./.yarn/cache/base-x-npm-3.0.9-7b2588e106-957101d6fd.zip/node_modules/base-x/",\
+          "packageDependencies": [\
+            ["base-x", "npm:3.0.9"],\
+            ["safe-buffer", "npm:5.2.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["base64-js", [\
         ["npm:1.5.1", {\
           "packageLocation": "./.yarn/cache/base64-js-npm-1.5.1-b2f7275641-669632eb37.zip/node_modules/base64-js/",\
@@ -4644,6 +4661,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/big.js-npm-5.2.2-e147c30820-b89b6e8419.zip/node_modules/big.js/",\
           "packageDependencies": [\
             ["big.js", "npm:5.2.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["bip32", [\
+        ["npm:3.0.1", {\
+          "packageLocation": "./.yarn/cache/bip32-npm-3.0.1-f0cd5b2552-466402a538.zip/node_modules/bip32/",\
+          "packageDependencies": [\
+            ["bip32", "npm:3.0.1"],\
+            ["@types/node", "npm:10.12.18"],\
+            ["bs58check", "npm:2.1.2"],\
+            ["create-hash", "npm:1.2.0"],\
+            ["create-hmac", "npm:1.1.7"],\
+            ["typeforce", "npm:1.18.0"],\
+            ["wif", "npm:2.0.6"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -4700,9 +4732,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/bn.js", "npm:5.1.0"],\
             ["@types/node", "npm:18.0.0"],\
             ["axios", "npm:0.27.2"],\
+            ["bip32", "npm:3.0.1"],\
+            ["bip39", "npm:3.0.4"],\
             ["bn.js", "npm:5.2.1"],\
             ["cosmjs-types", "npm:0.5.0"],\
             ["query-string", "npm:7.1.1"],\
+            ["tiny-secp256k1", "npm:2.2.1"],\
             ["ts-node", "virtual:23ecb6986bf7e6e33be3d4b4c64280016c03776f095e696d8bfc9799fb1f90fd18ff28cc83f2a52fb49f997c7bb22717767d4ada30191322bda55dc18350683c#npm:10.8.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=7ad353"]\
           ],\
@@ -4749,6 +4784,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["escalade", "npm:3.1.1"],\
             ["node-releases", "npm:2.0.5"],\
             ["picocolors", "npm:1.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["bs58", [\
+        ["npm:4.0.1", {\
+          "packageLocation": "./.yarn/cache/bs58-npm-4.0.1-8d2a7822b1-b3c5365bb9.zip/node_modules/bs58/",\
+          "packageDependencies": [\
+            ["bs58", "npm:4.0.1"],\
+            ["base-x", "npm:3.0.9"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["bs58check", [\
+        ["npm:2.1.2", {\
+          "packageLocation": "./.yarn/cache/bs58check-npm-2.1.2-4e87e40195-43bdf08a5d.zip/node_modules/bs58check/",\
+          "packageDependencies": [\
+            ["bs58check", "npm:2.1.2"],\
+            ["bs58", "npm:4.0.1"],\
+            ["create-hash", "npm:1.2.0"],\
+            ["safe-buffer", "npm:5.2.1"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -8299,6 +8356,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["tiny-secp256k1", [\
+        ["npm:2.2.1", {\
+          "packageLocation": "./.yarn/cache/tiny-secp256k1-npm-2.2.1-c67fa14eb1-89b6cef402.zip/node_modules/tiny-secp256k1/",\
+          "packageDependencies": [\
+            ["tiny-secp256k1", "npm:2.2.1"],\
+            ["uint8array-tools", "npm:0.0.7"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["to-fast-properties", [\
         ["npm:2.0.0", {\
           "packageLocation": "./.yarn/cache/to-fast-properties-npm-2.0.0-0dc60cc481-be2de62fe5.zip/node_modules/to-fast-properties/",\
@@ -8436,11 +8503,29 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["typeforce", [\
+        ["npm:1.18.0", {\
+          "packageLocation": "./.yarn/cache/typeforce-npm-1.18.0-372e34e2a2-e3b21e27e7.zip/node_modules/typeforce/",\
+          "packageDependencies": [\
+            ["typeforce", "npm:1.18.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["typescript", [\
         ["patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=7ad353", {\
           "packageLocation": "./.yarn/cache/typescript-patch-e8b9857d0c-9096d8f6c1.zip/node_modules/typescript/",\
           "packageDependencies": [\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=7ad353"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["uint8array-tools", [\
+        ["npm:0.0.7", {\
+          "packageLocation": "./.yarn/cache/uint8array-tools-npm-0.0.7-96ca58a124-6ffc45c7d2.zip/node_modules/uint8array-tools/",\
+          "packageDependencies": [\
+            ["uint8array-tools", "npm:0.0.7"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -8562,6 +8647,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["is-number-object", "npm:1.0.7"],\
             ["is-string", "npm:1.0.7"],\
             ["is-symbol", "npm:1.0.4"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["wif", [\
+        ["npm:2.0.6", {\
+          "packageLocation": "./.yarn/cache/wif-npm-2.0.6-f351bf025a-8c3147ef98.zip/node_modules/wif/",\
+          "packageDependencies": [\
+            ["wif", "npm:2.0.6"],\
+            ["bs58check", "npm:2.1.2"]\
           ],\
           "linkType": "HARD"\
         }]\
