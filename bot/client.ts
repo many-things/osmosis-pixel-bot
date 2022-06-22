@@ -283,8 +283,6 @@ export const sendTx = async (
 ): Promise<string> => {
   const txRawCall = signedTx.signedTx.txRaw;
   const txBytes = TxRaw.encode(txRawCall).finish();
-  console.log(JSON.stringify(decodeTxRaw(txBytes)));
   const response = await client.broadcastTx(txBytes);
-
   return response.transactionHash;
 };
