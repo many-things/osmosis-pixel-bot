@@ -5,7 +5,6 @@ import { encodeSecp256k1Pubkey } from '@cosmjs/amino';
 import {
   AccountData,
   DirectSecp256k1Wallet,
-  decodeTxRaw,
   encodePubkey,
   makeAuthInfoBytes,
   makeSignDoc,

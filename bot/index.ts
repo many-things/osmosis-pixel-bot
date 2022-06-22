@@ -6,7 +6,7 @@ import fs from 'fs';
 import { COLOR_SET, GAME_CONFIG } from './config';
 import { fromHex } from './find-color';
 import { paintWithGranter } from './paint';
-import { Secrets } from './secret';
+import { Secrets, getSecrets } from './secret';
 
 const componentToHex = (c: number) => c.toString(16).padStart(2, '0');
 const rgbToHex = (r: number, g: number, b: number) =>
@@ -61,7 +61,13 @@ const updatedPixels = async () => {
   return pixels;
 };
 
-const run = async (authString: string, granterAddr: string) => {
+// TODO: Extract typings
+const run = async (
+  passedAddrs: {
+    privateKey: string;
+    address: string;
+  }[],
+) => {
   const pixels = await updatedPixels();
   // const pixels: ResponsePixels = JSON.parse(
   //   fs.readFileSync('./assets/pixels.json', 'utf8'),
@@ -118,7 +124,6 @@ const run = async (authString: string, granterAddr: string) => {
   const offsetY = 98;
 
   let paintCount = 0;
-  let drawableAddr = granterAddr;
   let drawablePixels = new Set<string>();
 
   for (let x = 0; x < pngData.width; x++) {
@@ -186,12 +191,15 @@ const run = async (authString: string, granterAddr: string) => {
 
   console.log({ paintCount });
 
+  let drawableAddrs = [...passedAddrs];
+
   for (const memo of shuffled) {
-    const walletAddress = drawableAddr;
-    if (!walletAddress) {
+    const wallet = drawableAddrs.pop();
+    if (!wallet) {
       break;
     }
-    await paintWithGranter(authString, granterAddr, memo).catch((e) => {
+    const { privateKey, address } = wallet;
+    await paintWithGranter(privateKey, address, memo).catch((e) => {
       console.log('[Transaction] Error', e.response?.data ?? e.message ?? null);
       // console.error(e);
       return 0;
@@ -227,9 +235,7 @@ const delayForMilliseconds = async (ms: number) =>
   new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 const main = async () => {
-  const granterAddrs = await Promise.all(
-    Secrets.granterAddrs.map((addr) => addr),
-  );
+  const secrets = await getSecrets();
 
   let count = 0;
   while (1) {
@@ -241,16 +247,11 @@ const main = async () => {
     );
 
     const drawableAfterBlocksByIndex = await Promise.all<number>(
-      granterAddrs.map(async (addressPromise) => {
-        const granterAddr = addressPromise;
+      secrets.wallets.map(async (wallet) => {
         const { data } = await axios
-          .get(`https://pixels-osmosis.keplr.app/permission/${granterAddr}`)
-          .then((res) => {
-            console.log(res.data);
-            return res;
-          })
-          .catch(() => {
-            console.log('catch');
+          .get(`https://pixels-osmosis.keplr.app/permission/${wallet.address}`)
+          .catch((e) => {
+            console.error(e.response?.data ?? e.message ?? null);
             return { data: { remainingBlocks: 0 } };
           });
 
@@ -258,21 +259,14 @@ const main = async () => {
       }),
     );
 
-    console.log(drawableAfterBlocksByIndex);
-
-    const drawableAddrs = granterAddrs.filter((_granter, index) => {
+    const drawableAddrs = secrets.wallets.filter((_wallet, index) => {
       return drawableAfterBlocksByIndex[index] === 0;
     });
 
-    console.log({ drawableAddrs });
+    console.log({ drawableAddrs: drawableAddrs.map((v) => v.address) });
 
     if (drawableAddrs.length > 0) {
-      drawableAddrs.forEach(async (drawableAddr) => {
-        const authString =
-          Secrets.PRIVATE_KEYS[granterAddrs.indexOf(drawableAddr)];
-
-        await run(authString!, drawableAddr);
-      });
+      await run(drawableAddrs);
     }
 
     // console.log('Delay for 5s...');
