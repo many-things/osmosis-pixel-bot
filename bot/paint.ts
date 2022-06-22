@@ -33,18 +33,15 @@ export const paintWithGranter = async (
   granterAddr: string,
   memo: string = 'osmopixel (0,0,0)',
 ) => {
-  const privateKey =
-    authString !== undefined
-      ? convertHexStringToBuffer(
-          authString.startsWith('0x') ? authString.slice(2) : authString,
-        )
-      : undefined;
+  const privateKey = convertHexStringToBuffer(
+    authString.startsWith('0x') ? authString.slice(2) : authString,
+  );
 
   const client = await getClient(chainInfo.rpcUrl);
   const account: Account = await getAccount(privateKey, chainInfo);
   const txMessages = createTxMessage(chainInfo, account.address, granterAddr);
   const rawTx = await createTx(client, account.address, txMessages, memo);
-  const signedTx = await signTx(privateKey, mnemonic, rawTx, chainInfo);
+  const signedTx = await signTx(privateKey, rawTx, chainInfo);
 
   console.log('[Transaction] Committing transaction...', {
     granterAddr,
