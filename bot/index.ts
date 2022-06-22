@@ -236,6 +236,8 @@ const delayForMilliseconds = async (ms: number) =>
 const main = async () => {
   const secrets = await getSecrets();
 
+  console.log(secrets.wallets.map((v) => v.address));
+
   let count = 0;
   while (1) {
     count += 1;
@@ -253,6 +255,10 @@ const main = async () => {
             console.error(e.response?.data ?? e.message ?? null);
             return { data: { remainingBlocks: 0 } };
           });
+        if (data.permission === 'none') {
+          console.log(`${wallet.address} has no permission`);
+          return 1;
+        }
 
         return data.remainingBlocks;
       }),
