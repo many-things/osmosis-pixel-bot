@@ -27,6 +27,10 @@ type TenderMintRPCTXResponse = {
   };
 };
 
+// const primaryPrivateKey =
+//   convertHexStringToBuffer();
+//   // '?',
+
 export const paint = async (
   authString: string,
   walletAddress: string,
@@ -37,8 +41,31 @@ export const paint = async (
   );
 
   const client = await getClient(chainInfo.rpcUrl);
+
+  // if (
+  //   [
+  //     'osmo1rlwemt45ryzc8ynakzwgfkltm7jy8lswpnfswn',
+  //     'osmo15cenya0tr7nm3tz2wn3h3zwkht2rxrq7g9ypmq',
+  //   ].includes(walletAddress)
+  // ) {
+  //   const account: Account = await getAccount(primaryPrivateKey, chainInfo);
+  //   const txMessages = createTxMessage(
+  //     chainInfo,
+  //     account.address,
+  //     walletAddress,
+  //   );
+  //   const rawTx = await createTx(
+  //     client,
+  //     account.address,
+  //     txMessages,
+  //     'hahahaha',
+  //   );
+  //   const signedTx = await signTx(primaryPrivateKey, rawTx, chainInfo);
+  //   await sendTx(client, signedTx);
+  //   console.log('Funding');
+  // }
   const account: Account = await getAccount(privateKey, chainInfo);
-  const txMessages = createTxMessage(chainInfo, walletAddress);
+  const txMessages = createTxMessage(chainInfo, walletAddress, walletAddress);
   const rawTx = await createTx(client, account.address, txMessages, memo);
   const signedTx = await signTx(privateKey, rawTx, chainInfo);
 

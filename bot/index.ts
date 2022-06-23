@@ -178,9 +178,12 @@ const run = async (
       }
 
       if ((currentColor ?? 0) !== givenColorIndex) {
+        // // black first
         // if (givenColorIndex !== 3) {
         //   continue;
         // }
+
+        // // jabbey
         // if (pixelCoordX <= 65 && pixelCoordY <= 105) {
         //   continue;
         // }

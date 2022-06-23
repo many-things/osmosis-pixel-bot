@@ -169,15 +169,16 @@ export const getAccount = async (
 
 export const createTxMessage = (
   chainInformation: ChainInformation,
-  walletAddress: string,
+  fromAddress: string,
+  toAddress: string,
 ) => {
   const messages = [];
 
   messages.push({
     typeUrl: '/cosmos.bank.v1beta1.MsgSend',
     value: {
-      fromAddress: walletAddress,
-      toAddress: walletAddress,
+      fromAddress,
+      toAddress,
       amount: [
         {
           amount: '1',
