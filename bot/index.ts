@@ -291,7 +291,7 @@ const main = async () => {
     }
 
     // console.log('Delay for 5s...');
-    await delayForMilliseconds(5_000);
+    await delayForMilliseconds(10_000);
   }
 };
 
