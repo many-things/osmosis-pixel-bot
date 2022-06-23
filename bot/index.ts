@@ -32,6 +32,9 @@ const updatedPixels = async () => {
   );
   const ctx = canvas.getContext('2d');
 
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
   for (const xStr of Object.keys(pixels)) {
     const x = parseInt(xStr);
     if (!Number.isNaN(x)) {
@@ -77,6 +80,9 @@ const run = async (
     GAME_CONFIG.PIXEL_HEIGHT * GAME_CONFIG.PIXEL_SIZE,
   );
   const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   for (const xStr of Object.keys(pixels)) {
     const x = parseInt(xStr);
@@ -171,7 +177,13 @@ const run = async (
         continue;
       }
 
-      if (currentColor !== givenColorIndex) {
+      if ((currentColor ?? 0) !== givenColorIndex) {
+        // if (givenColorIndex !== 3) {
+        //   continue;
+        // }
+        // if (pixelCoordX <= 65 && pixelCoordY <= 105) {
+        //   continue;
+        // }
         // NOTE: Update color
         xPixels[pixelCoordX] = givenColorIndex;
         paintCount += 1;
@@ -237,6 +249,7 @@ const main = async () => {
   const secrets = await getSecrets();
 
   console.log(secrets.wallets.map((v) => v.address));
+  // console.log(secrets.wallets.map((v) => [v.address, v.privateKey]));
 
   let count = 0;
   while (1) {

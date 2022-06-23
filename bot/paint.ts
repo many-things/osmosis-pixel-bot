@@ -48,16 +48,17 @@ export const paint = async (
   });
   const txHash = await sendTx(client, signedTx);
 
-  const txInfo = await axios.get<TenderMintRPCTXResponse>(
-    queryString.stringifyUrl({
-      url: `${chainInfo.rpcUrl}/tx`,
-      query: {
-        hash: `0x${txHash}`,
-      },
-    }),
-  );
+  // const txInfo = await axios.get<TenderMintRPCTXResponse>(
+  //   queryString.stringifyUrl({
+  //     url: `${chainInfo.rpcUrl}/tx`,
+  //     query: {
+  //       hash: `0x${txHash}`,
+  //     },
+  //   }),
+  // );
 
-  const blockHeight = parseInt(txInfo.data.result.height);
-  console.log('[Transaction] Committed on ', { blockHeight, txHash });
-  return blockHeight;
+  // const blockHeight = parseInt(txInfo.data.result.height);
+  console.log('[Transaction] Committed on ', { txHash });
+  // return blockHeight;
+  return 0;
 };
