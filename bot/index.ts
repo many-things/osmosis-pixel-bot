@@ -251,7 +251,7 @@ const delayForMilliseconds = async (ms: number) =>
 const main = async () => {
   const secrets = await getSecrets();
 
-  console.log(secrets.wallets.map((v) => v.address));
+  // console.log(secrets.wallets.map((v) => v.address));
   // console.log(secrets.wallets.map((v) => [v.address, v.privateKey]));
 
   let count = 0;
@@ -291,7 +291,8 @@ const main = async () => {
     }
 
     // console.log('Delay for 5s...');
-    await delayForMilliseconds(10_000);
+    // await delayForMilliseconds(10_000);
+    await delayForMilliseconds(6_500);
   }
 };
 
